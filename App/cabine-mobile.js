@@ -228,22 +228,15 @@
         showError(elements.authError);
         const button = event.currentTarget;
         button.disabled = true;
+        const provider = new firebase.auth.GoogleAuthProvider();
         try {
-            const credential = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-            if (credential.user) showOnly(elements.connect);
+            // No celular, o redirecionamento evita bloqueios de popup e preserva
+            // o fluxo que já concluía a autenticação antes desta correção visual.
+            await auth.signInWithRedirect(provider);
         } catch (error) {
-            if (error.code === 'auth/popup-blocked') {
-                try {
-                    await auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
-                    return;
-                } catch (redirectError) {
-                    console.warn('Login Google por redirecionamento recusado:', redirectError.code);
-                }
-            }
-            if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
-                console.warn('Login Google da Cabine móvel recusado:', error.code);
-                showError(elements.authError, 'Não foi possível entrar com Google. Tente novamente.');
-            }
+            console.warn('Login Google da Cabine móvel recusado:', error.code);
+            const errorCode = error.code ? ` (${error.code})` : '';
+            showError(elements.authError, `Não foi possível entrar com Google${errorCode}.`);
         } finally {
             button.disabled = false;
         }
@@ -342,7 +335,7 @@
     auth.getRedirectResult().catch((error) => {
         if (error.code && error.code !== 'auth/no-auth-event') {
             console.warn('Retorno do login Google indisponível:', error.code);
-            showError(elements.authError, 'Não foi possível concluir o login com Google. Tente novamente.');
+            showError(elements.authError, `Não foi possível concluir o login com Google (${error.code}).`);
         }
     });
 
