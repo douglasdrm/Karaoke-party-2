@@ -1,9 +1,12 @@
 (() => {
     'use strict';
 
+    const productionHost = 'karaoke-party-2.vercel.app';
     const firebaseConfig = {
         apiKey: 'AIzaSyCnZ8hoE3NGNx2t490Yw12AxlCqVjSguig',
-        authDomain: 'karaoke-party-online.firebaseapp.com',
+        authDomain: window.location.hostname === productionHost
+            ? productionHost
+            : 'karaoke-party-online.firebaseapp.com',
         databaseURL: 'https://karaoke-party-online-default-rtdb.firebaseio.com',
         projectId: 'karaoke-party-online',
         storageBucket: 'karaoke-party-online.firebasestorage.app',
@@ -230,16 +233,11 @@
         button.disabled = true;
         const provider = new firebase.auth.GoogleAuthProvider();
         try {
-            const credential = await auth.signInWithPopup(provider);
-            if (credential.user) showOnly(elements.connect);
+            await auth.signInWithRedirect(provider);
         } catch (error) {
             console.warn('Login Google da Cabine móvel recusado:', error.code);
-            if (error.code === 'auth/popup-blocked') {
-                showError(elements.authError, 'O navegador bloqueou a janela do Google. Permita pop-ups para este site e tente novamente (auth/popup-blocked).');
-            } else if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
-                const errorCode = error.code ? ` (${error.code})` : '';
-                showError(elements.authError, `Não foi possível entrar com Google${errorCode}.`);
-            }
+            const errorCode = error.code ? ` (${error.code})` : '';
+            showError(elements.authError, `Não foi possível entrar com Google${errorCode}.`);
         } finally {
             button.disabled = false;
         }
@@ -332,6 +330,13 @@
             }
         }
         if (stateVersion === authStateVersion && currentUser) showOnly(elements.connect);
+    });
+
+    auth.getRedirectResult().catch((error) => {
+        if (error.code && error.code !== 'auth/no-auth-event') {
+            console.warn('Retorno do login Google indisponível:', error.code, error.message);
+            showError(elements.authError, `Não foi possível concluir o login com Google (${error.code}).`);
+        }
     });
 
     window.addEventListener('pagehide', detachRoom);

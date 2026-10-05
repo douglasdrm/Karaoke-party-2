@@ -1,5 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/__/auth/:path*",
+      "destination": "https://karaoke-party-online.firebaseapp.com/__/auth/:path*"
+    },
+    {
+      "source": "/__/firebase/init.json",
+      "destination": "https://karaoke-party-online.firebaseapp.com/__/firebase/init.json"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
