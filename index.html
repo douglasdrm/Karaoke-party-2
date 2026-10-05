@@ -701,7 +701,10 @@
                 }
 
                 const createCheckoutSession = functions.httpsCallable('createCheckoutSession');
-                const result = await createCheckoutSession({ uid: user.uid, planId: planId });
+                const result = await createCheckoutSession({
+                    planId: planId,
+                    returnBaseUrl: window.location.origin
+                });
                 
                 // 3. Redireciona para o Stripe
                 window.location.href = result.data.url;

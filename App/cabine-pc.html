@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<!-- VERSION 2.1.0 - SYNC FIX -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cabine PC | Karaoke Party</title>
+    <link rel="icon" type="image/png" href="../Assets/icon.png">
+    <link rel="stylesheet" href="cabine.css?v=1.0">
+    <link rel="stylesheet" href="engagement.css">
+    <link rel="stylesheet" href="party-features.css?v=5">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Driver.js Tour -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css" />
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-storage-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="challenges.css?v=1">
+<link rel="stylesheet" href="party-social.css?v=10">
+<link rel="stylesheet" href="cabin-layout.css?v=3">
+</head>
+
+<body class="cabin-pc-page">
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+
+    <!-- ─── Host Splash Login (Agora como Modal/Overlay) ─── -->
+    <div id="hostAuthOverlay" style="display: flex; opacity: 1;">
+        <div class="host-auth-container">
+            <a class="auth-close" href="cabine.html" title="Voltar aos modos da Cabine" aria-label="Voltar aos modos da Cabine"><i class="fas fa-times"></i></a>
+            <img src="../Assets/logo.png" alt="Logo" class="host-auth-logo">
+            <h1>CABINE DO DJ</h1>
+            <p>Faça login para gerenciar sua festa.</p>
+
+            <div class="trial-login-badge">
+                <i class="fas fa-gift"></i> 30 MINUTOS GRÁTIS LIBERADOS
+            </div>
+
+            <div class="host-auth-methods">
+                <button class="btn-host-google" id="btnHostLogin">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="G">
+                    Entrar com Google
+                </button>
+
+                <div class="auth-separator">
+                    <span>ou use e-mail do DJ</span>
+                </div>
+
+                <div class="auth-form" id="hostAuthForm">
+                    <div class="auth-input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="hostAuthEmail" placeholder="E-mail do DJ">
+                    </div>
+                    <div class="auth-input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="hostAuthPassword" placeholder="Sua senha">
+                    </div>
+                    <div class="auth-forgot" onclick="hostForgotPassword()">Esqueci minha senha</div>
+                    <button class="btn-auth-submit" id="btnHostAuthSubmit" onclick="handleHostEmailAuth()">ENTRAR NA
+                        CABINE</button>
+                </div>
+
+                <div class="auth-switch" id="hostAuthSwitch">
+                    Novo na plataforma? <span onclick="toggleHostAuthMode()">Solicitar Acesso / Criar Conta</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="main_wrapper" class="dashboard" style="display: none;">
+        <!-- Header -->
+        <header class="header panel">
+            <div class="header-left">
+                <img src="../Assets/logo.png" alt="Logo" class="main-logo">
+            </div>
+            <div class="header-center">
+                <h1 class="brand-title">KARAOKE PARTY</h1>
+                <div class="status-indicator">
+                    <span class="dot" style="background: #00ff00;"></span>
+                    ONLINE
+                </div>
+            </div>
+            <div class="header-right">
+                <a class="btn-icon" href="cabine.html" title="Trocar modo da Cabine" aria-label="Trocar modo da Cabine" style="text-decoration:none"><i class="fas fa-grip"></i></a><button id="btnSecondScreen" class="btn-icon" title="Abrir apresentação em outro monitor" aria-label="Segunda tela" style="width:auto;gap:8px;padding:0 12px;font-size:14px;font-weight:500;white-space:nowrap"><i class="fas fa-desktop"></i> Segunda tela</button><button id="btnPartySummary" class="btn-icon" title="Festas e resumos" aria-label="Festas e resumos"><i class="fas fa-list-alt"></i></button>
+                <button id="btnSettings" class="btn-icon" title="Configurações"><i class="fas fa-cog"></i></button>
+            </div>
+        </header>
+
+        <!-- Sidebar Left: Catálogo (Full Height) -->
+        <aside class="sidebar-search panel active-tab" id="tab-catalog">
+            <div class="catalog-header">
+                <h3>🎵 Catálogo</h3>
+                <button id="btnShuffle" class="btn-small" title="Música Aleatória"><i
+                        class="fas fa-random"></i></button>
+            </div>
+
+            <!-- CARD DE ESTATÍSTICAS DO DJ (v17) -->
+            <div id="djStatsCard" class="dj-mini-stats" style="margin-bottom: 12px; display: flex; gap: 8px;">
+                <div class="stat-bubble" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(255,255,255,0.05); border-radius: 20px; font-size: 0.75rem; border: 1px solid rgba(255,255,255,0.1); width: 100%; justify-content: center;">
+                    <i class="fas fa-star" style="color: #ffd700;"></i> 
+                    <span>Estilo mais tocado: <strong id="djStatGenre" style="color: var(--accent, #d946ef);">---</strong></span>
+                </div>
+            </div>
+            <div class="search-box">
+                <input type="text" id="songSearch" placeholder="Busque por artista, música ou código...">
+            </div>
+            <div class="song-list" id="songList"></div>
+        </aside>
+
+        <!-- Center: Video Area & Compact Controlás -->
+        <main class="main-player panel" id="playerContainer">
+            <!-- Top Overlays -->
+            <div id="codeEntryOverlay" class="code-overlay">
+                <div class="code-box">
+                    <span class="code-label">CÓDIGO:</span>
+                    <span id="codeDisplay" class="code-digits">_ _ _ _ _</span>
+                    <div id="codeSongInfo" class="code-song-name"></div>
+                </div>
+            </div>
+
+            <div id="fsQueueOverlay" class="fs-queue-box" style="display:none"></div>
+            
+            <!-- Container de Reações movido para o final do body em app.js -->
+            
+            <!-- VU METRO DE PALCO (v5) -->
+            <div class="vu-meter-container">
+                <div id="vuBar" class="vu-meter-bar"></div>
+            </div>
+
+
+            <!-- Engajamento em Tempo Real (v22) -->
+            <div id="reactionContainer"></div>
+
+            <!-- Camada pública persistente: permanece fora de #player para que
+                 a troca de vídeo não reinicie a animação dos rankings. -->
+            <section id="rankingTicker" class="ranking-ticker" aria-label="Destaques da festa" hidden>
+                <div class="ranking-ticker-shade"></div>
+                <div class="ranking-ticker-viewport">
+                    <div class="ranking-ticker-track">
+                        <div class="ranking-ticker-sequence" data-ranking-copy="primary"></div>
+                        <div class="ranking-ticker-sequence" data-ranking-copy="visual" aria-hidden="true"></div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="qr-fullscreen-box" aria-label="Acesso à festa pelo celular">
+                <div id="hostRoomCode" class="qr-party-name">Minha festa</div>
+                <div id="qrcode-fs"></div>
+                <div class="qr-fs-label">Peça pelo celular</div>
+                <div id="qrRoomCodeFs" class="qr-fs-room-code" style="display:none;"></div>
+                <a id="qrMobileLink" class="qr-mobile-link" target="_blank" rel="noopener">Abrir catálogo ↗</a>
+            </div>
+
+            <div id="topInfoBox" class="floating-info-box" style="display:none">
+                <div class="info-label">CANTANDO AGORA</div>
+                <h1 id="topInfoTitle">SELECIONE UMA MÚSICA</h1>
+                <p id="topInfoArtist">O PALCO É SEU!</p>
+            </div>
+
+            <div class="video-container" id="player">
+                <div class="placeholder-msg">AGUARDANDO PRÓXIMO CANTOR...</div>
+            </div>
+
+            <!-- OVERLAYS DE IDENTIDADE VISUAL (v17) -->
+            <div id="djWatermark" class="dj-watermark"></div>
+
+            <div id="djFooter" class="dj-footer-badge" style="display:none;">
+                <i class="fas fa-compact-disc fa-spin"></i> Host: <span id="djFooterName">---</span>
+            </div>
+
+            <div class="current-info">
+                <h1>SELECIONE UMA MÚSICA</h1>
+                <p>O PALCO É SEU!</p>
+            </div>
+
+            <!-- Botão de Minimizar (Voltar para Abas) no Mobile -->
+            <button class="btn-minimize-player" onclick="toggleMobilePlayer(false)">
+                <i class="fas fa-th-large"></i> GERENCIAR FESTA
+            </button>
+
+            <!-- Integrated Compact Controlás -->
+            <div class="compact-controls-wrapper">
+                <div class="controls compact-panel" id="mainControls">
+                    <div class="control-section left">
+                        <button class="btn-control" onclick="restartSong()" title="Recomeçar (Home)"><i
+                                class="fas fa-redo"></i></button>
+                        <div class="divider"></div>
+                        <div class="tone-control">
+                            <button class="btn-mini" onclick="changeTone(-0.05)" title="Diminuir Tom"><i
+                                    class="fas fa-minus"></i></button>
+                            <span class="control-label">TOM: 0</span>
+
+                            <button class="btn-mini" onclick="changeTone(0.05)" title="Aumentar Tom"><i
+                                    class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="control-section center">
+                        <button class="btn-main btn-play" onclick="togglePlay()" title="Play/Pause (Space)"><i
+                                class="fas fa-play"></i></button>
+                        <button class="btn-control btn-stop" onclick="showScore()" title="Parar/Nota (Esc)"><i
+                                class="fas fa-stop"></i></button>
+                        <button class="btn-control btn-next" onclick="skipSong()" title="Pular (PageDown)"><i
+                                class="fas fa-step-forward"></i></button>
+                    </div>
+                    <div class="control-section right">
+                        <button class="btn-mini btn-fs-toggle" onclick="toggleFullscreen()" title="Tela Cheia (F)"><i
+                                class="fas fa-expand"></i></button>
+                        <div class="divider"></div>
+                        <div class="volume-control">
+                            <button class="btn-mini" onclick="changeVolume(-0.1)" title="Baixar Volume"><i
+                                    class="fas fa-minus"></i></button>
+                            <span class="control-label"><i class="fas fa-volume-up"></i> VOLUME</span>
+                            <button class="btn-mini" onclick="changeVolume(0.1)" title="Aumentar Volume"><i
+                                    class="fas fa-plus"></i></button>
+                            <input type="range" id="volRange" min="0" max="1" step="0.1" value="1"
+                                oninput="setVideoVolume(this.value)" style="display:none">
+                        </div>
+                        <div class="divider"></div>
+                        <button class="btn-control" id="btnHelp" title="Ajuda/Atalhos"><i
+                                class="fas fa-keyboard"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screensaver movido para dentro do player para funcionar em Fullscreen -->
+            <div id="screensaver" class="screensaver-layer" style="display:none"></div>
+
+            <!-- Display de Votação da Galera (Vibe) - Movido para HTML Estático -->
+            <div id="publicScoreDisplay" class="public-score-display" style="display:none; flex-direction:column;">
+                <div class="vibe-header" style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                    <span class="vibe-label">VIBE DA GALERA</span>
+                    <span id="publicScoreVal" class="vibe-value">0.0</span>
+                </div>
+                <div class="vibe-bar-bg" style="width:100%; height:12px; background:rgba(255,255,255,0.1); border-radius:6px; overflow:hidden; margin-top:5px;">
+                    <div id="vibeBarInner" class="vibe-bar-fill" style="height:100%; width:0%; transition: width 0.3s ease;"></div>
+                </div>
+                <!-- Dedômetro live display (👍 vs 👎) (Novo!) -->
+                <div id="dedometroDisplay" style="display:none; margin-top:12px; border-top:1px solid rgba(255,255,255,0.12); padding-top:10px; width:100%; box-sizing:border-box;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">
+                        <span style="color:#00ff80;"><i class="fas fa-thumbs-up"></i> <span id="likeCount">0</span> Aprovado</span>
+                        <span style="color:#ff4444;"><span id="dislikeCount">0</span> Zoeira <i class="fas fa-thumbs-down"></i></span>
+                    </div>
+                    <div style="height:8px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden; display:flex; width:100%;">
+                        <div id="likeBarInner" style="width:50%; background:#00ff80; transition:width 0.4s cubic-bezier(0.1, 0.8, 0.3, 1);"></div>
+                        <div id="dislikeBarInner" style="width:50%; background:#ff4444; transition:width 0.4s cubic-bezier(0.1, 0.8, 0.3, 1);"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Atalhos Sempre Visíveis -->
+        <div class="hotkey-bar">
+            <span><kbd>Espaço</kbd> Play/Pause</span>
+            <span><kbd>Del</kbd> Nota</span>
+            <span><kbd>[ ]</kbd> Tom</span>
+            <span><kbd>- +</kbd> Volume</span>
+            <span><kbd>Home</kbd> Reiniciar</span>
+            <span><kbd>F</kbd> Fullscreen</span>
+            <span><kbd>ESC</kbd> Sair</span>
+        </div>
+
+        <!-- Barra de Navegação Mobile (Fixa na base) -->
+        <nav class="mobile-tab-nav">
+            <button class="tab-btn active" id="btn-tab-catalog" onclick="switchMobileTab('catalog')">
+                <i class="fas fa-search"></i>
+                <span>Catálogo</span>
+            </button>
+            <button class="tab-btn" id="btn-tab-queue" onclick="switchMobileTab('queue')">
+                <i class="fas fa-list-ol"></i>
+                <span>Ver Fila</span>
+            </button>
+            <button class="tab-btn" onclick="toggleMobilePlayer(true)">
+                <i class="fas fa-tv"></i>
+                <span>Tela Cheia</span>
+            </button>
+        </nav>
+
+        <!-- Sidebar Right: Queue & QR en la base -->
+        <aside class="sidebar-queue panel" id="tab-queue">
+            <div class="queue-header">
+                <div style="display: flex; flex-direction: column;">
+                    <h3>🔥 Próximos Cantores</h3>
+                    <span id="queueWaitTime" class="queue-wait-time" style="display:none"></span>
+                </div>
+            </div>
+            <div class="queue-list" id="queueList"></div>
+
+        </aside>
+
+        <!-- Custom Modals -->
+        <div id="customModal" class="modal-overlay">
+            <div class="modal-content">
+                <h2 id="modalTitle">Título</h2>
+                <div id="modalBody"></div>
+                <div class="modal-footer">
+                    <button id="modalCancel" class="btn-modal secondary">CANCELAR</button>
+                    <button id="modalConfirm" class="btn-modal primary">CONFIRMAR</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal Specific -->
+        <div id="settingsModal" class="modal-overlay">
+            <div class="modal-content settings-content" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+                <h2 id="settingsTitle">⚙️ Configurações da cabine</h2><p class="settings-intro">Personalize sua festa, ajuste o áudio e acompanhe seu painel.</p>
+                <div class="settings-body"><section class="settings-group"><h3>Visual da festa</h3><div class="setting-item" style="border-color: var(--accent-primary); background: rgba(217,70,239,0.05); margin-bottom: 25px;">
+                        <label for="setDjName">🆔 Identidade Visual do DJ:</label>
+                        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                            <input type="text" id="setDjName" placeholder="Seu Nome Artístico (Ex: DJ Douglas)" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 8px;">
+                            
+                            <label class="photo-input-btn" style="padding: 10px; font-size: 0.8rem; background: var(--accent-primary);">
+                                <i class="fas fa-image"></i> UPLOAD DA LOGO (PNG/JPG)
+                                <input type="file" id="setLogoInput" accept="image/*" style="display:none" onchange="handleLogoUpload(event)">
+                            </label>
+                            <small id="logoStatus" style="opacity:0.6;">Tamanho máximo: 500KB. Formato: PNG/JPG.</small>
+                        </div>
+                    </div><div class="setting-item">
+                        <label id="lblPhotos">🖼️ Fotos para Proteção de Tela:</label>
+                        <div class="photo-upload-container">
+                            <label class="photo-input-btn">
+                                <i class="fas fa-upload"></i> ADICIONAR FOTOS
+                                <input type="file" id="setPhotosInput" multiple="" accept="image/*" style="display:none">
+                            </label>
+                            <p style="font-size:0.65rem; opacity:0.5;">Dica: Use fotos horizontais (1920x1080) para
+                                cobrir toda a tela.</p>
+                            <div id="photoPreviewGrid" class="photo-preview-grid"></div>
+                        </div>
+                    </div><div class="setting-item">
+                        <label for="setScreensaverTime">Inatividade para Proteção de Tela:</label>
+                        <select id="setScreensaverTime" style="width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); color:white; padding:10px; border-radius:8px; margin-top:10px;">
+                            <option value="30000">30 Segundos (Padrão)</option>
+                            <option value="60000">1 Minuto</option>
+                            <option value="120000">2 Minutos</option>
+                            <option value="300000">5 Minutos</option>
+                            <option value="0">Nunca (Manter Vibe/Clipe)</option>
+                        </select>
+                        <small>O carrossel de fotos aparece automaticamente após este tempo sem uso.</small>
+                    </div></section><section class="settings-group"><h3>Áudio e reprodução</h3><div class="setting-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="setPlayIntroCall" checked="">
+                            <strong>Tocar áudio de abertura antes das músicas</strong>
+                        </label>
+                        <small>Quando ativado, toca a vinheta de chamada do cantor antes do vídeo iniciar. Quando desativado, o vídeo inicia diretamente.</small>
+                    </div><div class="setting-item">
+                        <label class="checkbox-label"><input type="checkbox" id="setAutoApproveVoiceMessages"><strong>Liberar recados de voz automaticamente</strong></label>
+                        <small>Ativado: novos recados entram no próximo intervalo sem aprovação. Desativado: o DJ precisa aprovar. Recados já recebidos mantêm a situação atual. Nunca interrompe a música.</small>
+                    </div><div class="setting-item">
+                        <label for="setAmbientUrl">Música Ambiente (YouTube Link):</label>
+                        <input type="text" id="setAmbientUrl" placeholder="Ex: https://www.youtube.com/watch?v=..." class="full-width">
+                        <small>Deixe em branco para usar o padrão (Lounge Instrumental)</small>
+                    </div><div class="setting-item">
+                        <label for="setAmbientRankingMode">Tela de descanso:</label>
+                        <select id="setAmbientRankingMode" class="full-width">
+                            <option value="video">Priorizar vídeo</option>
+                            <option value="balanced" selected>Equilibrado</option>
+                            <option value="rankings">Priorizar rankings</option>
+                        </select>
+                        <small>Define por quanto tempo o vídeo ambiente e os rankings ficam em destaque.</small>
+                    </div></section><section class="settings-group"><h3>Pontuação</h3><div class="setting-section">
+                        <div class="setting-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="setEnableScore" checked="">
+                                <strong>Habilitar Pontuação</strong>
+                                <span class="score-range-hint">mín=0 máx=100</span>
+                            </label>
+                        </div>
+
+                        <div class="score-options-grid">
+                            <div class="score-mode-choice">
+                                <label class="radio-label">
+                                    <input type="radio" name="scoreMode" value="random" id="modeRandom">
+                                    Aleatória
+                                </label>
+                                <div class="sub-setting">
+                                    <span>Menor pontuação aleatória:</span>
+                                    <input type="number" id="setMinRandomScore" value="75" min="0" max="100">
+                                </div>
+                            </div>
+
+                            <div class="score-mode-choice">
+                                <label class="radio-label">
+                                    <input type="radio" name="scoreMode" value="mic" id="modeMic" checked="">
+                                    A partir do Microfone
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="difficulty-section" id="difficultySection">
+                            <div style="font-weight:bold;margin-bottom:8px;">Grau de Dificuldade da Pontuação (Microfone):</div>
+                            <div class="difficulty-radios">
+                                <label class="diff-btn"><input type="radio" name="difficulty" value="super_easy"><span>Super Fácil</span></label>
+                                <label class="diff-btn"><input type="radio" name="difficulty" value="very_easy"><span>Muito Fácil</span></label>
+                                <label class="diff-btn"><input type="radio" name="difficulty" value="easy"><span>Fácil</span></label>
+                                <label class="diff-btn"><input type="radio" name="difficulty" value="nãormal" checked=""><span>Padrão</span></label>
+                                <label class="diff-btn"><input type="radio" name="difficulty" value="hard"><span>Difícil</span></label>
+                            </div>
+                            <!-- VU METRO DE CALIBRAÇÃO -->
+                            <div class="calib-container"><button type="button" id="testMicButton" class="btn-modal secondary" style="margin-bottom:12px">TESTAR MICROFONE</button><small>O microfone fica ativo apenas durante a pontuação ou este teste. Se usar fone Bluetooth, prefira um microfone separado para manter a qualidade do áudio.</small>
+                                <div class="calib-label">Volume do Microfone: <span id="calibVolVal">0</span></div>
+                                <div class="calib-bar-bg">
+                                    <div id="calibBar" class="calib-bar-fill"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div></section><section class="settings-group"><h3>Conta e ajuda</h3><a id="adminMenuBtn" href="admin.html" target="_blank" rel="noopener" class="setting-item" style="display:none;color:#ffd700;padding:14px;text-align:center;">ADMINISTRAÇÃO / MEU PAINEL DE DJ</a><div class="setting-item" style="border-color: #ffd700; background: rgba(255,215,0,0.05); cursor: pointer; margin-bottom: 10px;" onclick="openSubscriptionModal()">
+                        <label style="color: #ffd700; justify-content: center; cursor: pointer;"><i class="fas fa-star"></i> MINHA ASSINATURA / PLANO</label>
+                    </div><div class="setting-item" style="border-color: #ff4444; background: rgba(255,0,0,0.05); cursor: pointer;" onclick="logoutHost()">
+                        <label style="color: #ff4444; justify-content: center; cursor: pointer;"><i class="fas fa-sign-out-alt"></i> DESCONECTAR DA CABINE (LOGOUT)</label>
+                    </div><div class="setting-item" style="border-color: #00f2ff; background: rgba(0,242,255,0.05); cursor: pointer; margin-top: 10px;" onclick="startHostTour(true)">
+                        <label style="color: #00f2ff; justify-content: center; cursor: pointer;"><i class="fas fa-route"></i> REFAZER TUTORIAL DA CABINE</label>
+                    </div></section></div>
+                <div class="modal-footer">
+                    <button id="settingsClose" class="btn-modal secondary">FECHAR</button>
+                    <button id="settingsSave" class="btn-modal primary">SALVAR</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOVO: Modal de Detalhes da Assinatura (v22) -->
+        <div id="subscriptionModal" class="modal-overlay" style="display:none;">
+            <div class="modal-content" style="max-width:400px; text-align:center;">
+                <div class="modal-header">
+                    <h2 style="font-family:'Montserrat',sans-serif; font-weight:900;"><i class="fas fa-id-card"></i> MINHA ASSINATURA</h2>
+                </div>
+                <div class="modal-body" style="padding:20px 0;">
+                    <div id="subDetailsContent">
+                        <p style="opacity:0.7;">Carregando dados...</p>
+                    </div>
+                    
+                    <div style="margin-top:20px; padding:15px; background:rgba(255,255,255,0.05); border-radius:10px; font-size:0.85rem; text-align:left;">
+                        <i class="fas fa-info-circle"></i> <strong>Pagamentos:</strong><br>
+                        Os pagamentos são processados com segurança via Stripe. Para cancelar ou alterar dados do cartão, acesse o link enviado ao seu e-mail na hora da compra ou entre em contato.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="document.getElementById('subscriptionModal').style.display='none'" class="btn-modal secondary">FECHAR</button>
+                    <a href="https://wa.me/5521967192554?text=Olá!%20Gostaria%20de%20ajuda%20com%20minha%20assinatura." target="_blank" class="btn-modal primary" style="background:#25D366; border:none; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:8px;">
+                        <i class="fab fa-whatsapp"></i> SUPORTE
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hotkey Legend -->
+        <div id="hotkeyLegend" class="hotkey-legend">
+            <h3>⌨️ Teclas de Atalho</h3>
+            <div><strong>Espaço</strong> Play / Pause</div>
+            <div><strong>Delete</strong> Para a música e d nãota</div>
+            <div><strong>[ e ]</strong> Ajustar Tom (-/+)</div>
+            <div><strong>- e +</strong> Ajustar Volume (-/+)</div>
+            <div><strong>, (vírgula)</strong> Forçar Nota 100</div>
+            <div><strong>Home</strong> Reiniciar Música</div>
+            <div><strong>F</strong> Entrar/Sair Tela Cheia</div>
+            <div><strong>ESC</strong> Cancelar código / Sair Tela Cheia nativa</div>
+        </div>
+    </div>
+
+
+    <!-- Modal de Período de Teste Expirado (Trial) -->
+    <div id="trialExpiredModal" class="modal-overlay" style="display:none; z-index:999999;">
+        <div class="modal-content"
+            style="max-width:450px; text-align:center; padding:40px; border:2px solid var(--accent-primary);">
+            <i class="fas fa-hourglass-end"
+                style="font-size:4rem; color:var(--accent-primary); margin-bottom:25px; filter:drop-shadow(0 0 15px rgba(217,70,239,0.5));"></i>
+            <h2 style="font-family:'Montserrat',sans-serif; font-weight:900; letter-spacing:2px; margin-bottom:15px;">
+                PERÍODO DE TESTE ENCERRADO</h2>
+            <p style="color:rgba(255,255,255,0.7); line-height:1.6; margin-bottom:30px;">
+                Vocêê aproveitou seus 30 minutos de degustação! <br>
+                Para continuar usando o sistema sem limites e ter acesso a todas as funcionalidades exclusivas, entre em
+                contato conosco.
+            </p>
+
+            <a href="/#planos"
+                style="display:flex; align-items:center; justify-content:center; gap:12px; background:linear-gradient(135deg, var(--accent-primary), #a020f0); color:white; padding:18px; border-radius:15px; text-decoration:none; font-weight:900; font-size:1.1rem; box-shadow:0 10px 30px rgba(217,70,239,0.3); transition:0.3s;">
+                <i class="fas fa-rocket" style="font-size:1.3rem;"></i>
+                ESCOLHER MEU PLANO AGORA
+            </a>
+
+            <div style="margin-top:25px;">
+                <button onclick="auth.signOut().then(()=>location.reload())"
+                    style="background:none; border:none; color:rgba(255,255,255,0.4); text-decoration:underline; cursor:pointer; font-size:0.8rem;">Fazer
+                    Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner de Tempo de Trial (Discreto) -->
+    <div id="trialTimerBanner"
+        style="display:none; position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px); padding:8px 20px; border-radius:30px; border:1px solid var(--accent-primary); z-index:2000; align-items:center; gap:15px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+        <div
+            style="width:10px; height:10px; background:var(--accent-primary); border-radius:50%; animation: pulse 1.5s infinite;">
+        </div>
+        <span style="font-size:0.8rem; font-weight:700; color:white; letter-spacing:1px;">MODO DEGUSTAÇÃO: <span
+                id="trialTimeRemaining">30:00</span> RESTANTES</span>
+    </div>
+
+    <!-- Banner de Tempo Premium (Discreto) -->
+    <div id="premiumTimerBanner"
+        style="display:none; position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px); padding:8px 20px; border-radius:30px; border:1px solid #00f2ff; z-index:2000; align-items:center; gap:15px; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+        <div
+            style="width:10px; height:10px; background:#00f2ff; border-radius:50%; animation: pulse 2s infinite;">
+        </div>
+        <span style="font-size:0.8rem; font-weight:700; color:white; letter-spacing:1px;">ACESSO LIBERADO: <span
+                id="premiumTimeRemaining">--:--</span></span>
+        <button onclick="openSubscriptionModal()" style="background:none; border:none; color:#00f2ff; font-size:0.7rem; cursor:pointer; text-decoration:underline;">VER DETALHES</button>
+    </div>
+
+    <!-- Container de Reações (v22) -->
+    <div id="reactionContainer"></div>
+
+    <script src="qrcode.min.js"></script>
+    <script src="singer-selection.js?v=2" defer></script>
+    <script src="tone-control.js?v=1" defer></script>
+    <script src="party-core.js?v=4" defer></script>
+    <script src="party-ui.js?v=1" defer></script>
+    <script src="party-host.js?v=5" defer></script>
+    <script src="social-core.js?v=1"></script>
+    <script src="party-social.js?v=4"></script>
+    <script src="challenge-core.js?v=1"></script>
+    <script src="challenges.js?v=4" defer></script>
+    <script src="audience-host.js?v=1" defer></script><script src="app.js?v=5.1" defer></script>
+    <script src="tour-host.js" defer></script>
+</body>
+
+</html>
+
+

@@ -1068,7 +1068,7 @@
 
         let pathStr = window.location.pathname;
 
-        if (pathStr.endsWith('index.html') || pathStr.endsWith('cabine.html')) {
+        if (pathStr.endsWith('index.html') || pathStr.endsWith('cabine.html') || pathStr.endsWith('cabine-pc.html')) {
 
             pathStr = pathStr.substring(0, pathStr.lastIndexOf('/') + 1);
 

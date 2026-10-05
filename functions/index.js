@@ -11,15 +11,44 @@ const STRIPE_WEBHOOK_SECRET = defineSecret('STRIPE_WEBHOOK_SECRET');
 
 admin.initializeApp();
 
+const CHECKOUT_RETURN_TARGETS = Object.freeze({
+    'https://karaoke.unodev.com.br': {
+        successPath: '/App/index.html',
+        cancelPath: '/index.html'
+    },
+    'https://karaoke-party-2.vercel.app': {
+        successPath: '/App/cabine-pc.html',
+        cancelPath: '/'
+    }
+});
+
+function resolveCheckoutReturnTarget(returnBaseUrl) {
+    if (!returnBaseUrl) return CHECKOUT_RETURN_TARGETS['https://karaoke.unodev.com.br'];
+
+    let origin;
+    try {
+        origin = new URL(returnBaseUrl).origin;
+    } catch {
+        throw new HttpsError('invalid-argument', 'Endereço de retorno inválido.');
+    }
+
+    const target = CHECKOUT_RETURN_TARGETS[origin];
+    if (!target) throw new HttpsError('permission-denied', 'Domínio de retorno não autorizado.');
+    return { origin, ...target };
+}
+
 exports.createCheckoutSession = onCall(
     { secrets: [STRIPE_SECRET_KEY] },
     async (request) => {
-        const { uid, planId } = request.data;
-        const stripe = new Stripe(STRIPE_SECRET_KEY.value());
-
         if (!request.auth) {
             throw new HttpsError('unauthenticated', 'Login necessário.');
         }
+
+        const { planId, returnBaseUrl } = request.data || {};
+        const uid = request.auth.uid;
+        const checkoutTarget = resolveCheckoutReturnTarget(returnBaseUrl);
+        const returnOrigin = checkoutTarget.origin || 'https://karaoke.unodev.com.br';
+        const stripe = new Stripe(STRIPE_SECRET_KEY.value());
 
         const plans = {
             'avulso3h':   { name: 'Avulso 3h',         price: 1000,  hours: 3,   mode: 'payment' },
@@ -51,8 +80,8 @@ exports.createCheckoutSession = onCall(
                     quantity: 1,
                 }],
                 mode: plan.mode,
-                success_url: 'https://karaoke.unodev.com.br/App/cabine.html?session_id={CHECKOUT_SESSION_ID}',
-                cancel_url: 'https://karaoke.unodev.com.br/index.html',
+                success_url: `${returnOrigin}${checkoutTarget.successPath}?session_id={CHECKOUT_SESSION_ID}`,
+                cancel_url: `${returnOrigin}${checkoutTarget.cancelPath}`,
                 client_reference_id: uid, 
                 metadata: { 
                     uid: uid, 
