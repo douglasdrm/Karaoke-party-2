@@ -230,13 +230,16 @@
         button.disabled = true;
         const provider = new firebase.auth.GoogleAuthProvider();
         try {
-            // No celular, o redirecionamento evita bloqueios de popup e preserva
-            // o fluxo que já concluía a autenticação antes desta correção visual.
-            await auth.signInWithRedirect(provider);
+            const credential = await auth.signInWithPopup(provider);
+            if (credential.user) showOnly(elements.connect);
         } catch (error) {
             console.warn('Login Google da Cabine móvel recusado:', error.code);
-            const errorCode = error.code ? ` (${error.code})` : '';
-            showError(elements.authError, `Não foi possível entrar com Google${errorCode}.`);
+            if (error.code === 'auth/popup-blocked') {
+                showError(elements.authError, 'O navegador bloqueou a janela do Google. Permita pop-ups para este site e tente novamente (auth/popup-blocked).');
+            } else if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+                const errorCode = error.code ? ` (${error.code})` : '';
+                showError(elements.authError, `Não foi possível entrar com Google${errorCode}.`);
+            }
         } finally {
             button.disabled = false;
         }
@@ -329,14 +332,6 @@
             }
         }
         if (stateVersion === authStateVersion && currentUser) showOnly(elements.connect);
-    });
-
-    // Completa logins iniciados por redirecionamento em navegadores que bloqueiam popup.
-    auth.getRedirectResult().catch((error) => {
-        if (error.code && error.code !== 'auth/no-auth-event') {
-            console.warn('Retorno do login Google indisponível:', error.code);
-            showError(elements.authError, `Não foi possível concluir o login com Google (${error.code}).`);
-        }
     });
 
     window.addEventListener('pagehide', detachRoom);
