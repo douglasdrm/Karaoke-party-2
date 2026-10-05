@@ -162,6 +162,10 @@
 
     let currentRoomName = "Festa do DJ";
 
+    let hostCommandsQuery = null;
+
+    let hostCommandHandler = null;
+
     let hostUser = null;
 
     let isPremium = false; // Novo: Status VIP
@@ -938,6 +942,8 @@
     function startRoom(name) {
         PartyHost.begin(name);
 
+        stopHostCommandListener();
+
         // Remove sala anterior deste host (se existir) para não acumular
 
         if (currentRoomCode) {
@@ -985,6 +991,12 @@
 
         });
 
+        publishHostState({
+            playing: false,
+            volume: currentVolume,
+            pitch: currentPitch
+        });
+
         // Remove sala ao fechar a janela
 
         db.ref('salas/' + currentRoomCode).onDisconnect().remove();
@@ -1011,6 +1023,8 @@
         SocialHost.begin();
         startMobilePolling();
 
+        startHostCommandListener();
+
         startActiveUsersListener();
         initReactionListener();
 
@@ -1027,6 +1041,78 @@
             setTimeout(() => startHostTour(), 800);
 
         }
+
+    }
+
+    function publishHostState(values) {
+
+        if (!currentRoomCode) return;
+
+        db.ref(`salas/${currentRoomCode}/host_state`).update({
+            ...values,
+            updatedAt: firebase.database.ServerValue.TIMESTAMP
+        }).catch(error => console.warn('Não foi possível publicar o estado da Cabine:', error));
+
+    }
+
+    function stopHostCommandListener() {
+
+        if (hostCommandsQuery && hostCommandHandler) {
+            hostCommandsQuery.off('child_added', hostCommandHandler);
+        }
+
+        hostCommandsQuery = null;
+        hostCommandHandler = null;
+
+    }
+
+    function startHostCommandListener() {
+
+        stopHostCommandListener();
+        if (!currentRoomCode || !hostUser) return;
+
+        const listenerStartedAt = Date.now() - 5000;
+        hostCommandsQuery = db.ref(`salas/${currentRoomCode}/host_commands`).limitToLast(20);
+        hostCommandHandler = async (snapshot) => {
+            const command = snapshot.val() || {};
+            try {
+                if (command.senderUid !== hostUser.uid) return;
+                if (!Number.isFinite(Number(command.createdAt)) || Number(command.createdAt) < listenerStartedAt) return;
+
+                switch (command.action) {
+                    case 'play_pause':
+                        if (document.getElementById('mainVideo')) togglePlay();
+                        else if (queue.length) playNext();
+                        break;
+                    case 'restart':
+                        restartSong();
+                        break;
+                    case 'skip':
+                        skipSong();
+                        break;
+                    case 'volume':
+                        setVideoVolume(Number(command.payload?.value));
+                        break;
+                    case 'tone_down':
+                        changeTone(-0.05);
+                        break;
+                    case 'tone_reset':
+                        resetTone();
+                        publishHostState({ pitch: currentPitch });
+                        break;
+                    case 'tone_up':
+                        changeTone(0.05);
+                        break;
+                    default:
+                        console.warn('Comando remoto ignorado:', command.action);
+                }
+            } catch (error) {
+                console.error('Erro ao executar comando da Cabine móvel:', error);
+            } finally {
+                snapshot.ref.remove().catch(error => console.warn('Não foi possível limpar o comando remoto:', error));
+            }
+        };
+        hostCommandsQuery.on('child_added', hostCommandHandler);
 
     }
 
@@ -1107,6 +1193,8 @@
     }
 
     async function logoutHost() {
+        stopHostCommandListener();
+
         try { await PartyHost.end(); } catch (error) {
             if (!confirm("Não foi possível salvar o resumo. Sair mesmo assim?")) return;
         }
@@ -3522,9 +3610,21 @@
 
         }
 
-        if (v.paused) { v.play(); const i = document.querySelector('.btn-play i'); if (i) i.className = 'fas fa-pause'; }
-
-        else { v.pause(); const i = document.querySelector('.btn-play i'); if (i) i.className = 'fas fa-play'; }
+        if (v.paused) {
+            const playAttempt = v.play();
+            const i = document.querySelector('.btn-play i');
+            if (i) i.className = 'fas fa-pause';
+            Promise.resolve(playAttempt).then(() => {
+                if (currentRoomCode) db.ref(`salas/${currentRoomCode}/now_playing/playing`).set(true).catch(console.warn);
+                publishHostState({ playing: true });
+            }).catch(error => console.warn('Reprodução bloqueada:', error));
+        } else {
+            v.pause();
+            const i = document.querySelector('.btn-play i');
+            if (i) i.className = 'fas fa-play';
+            if (currentRoomCode) db.ref(`salas/${currentRoomCode}/now_playing/playing`).set(false).catch(console.warn);
+            publishHostState({ playing: false });
+        }
 
     }
 
@@ -3548,6 +3648,8 @@
 
         const r = document.getElementById('volRange');
         if (r) r.value = currentVolume;
+
+        publishHostState({ volume: currentVolume });
     }
 
     function changeVolume(delta) {
@@ -3598,6 +3700,8 @@
         if (currentRoomCode && isPlaying) {
             db.ref(`salas/${currentRoomCode}/now_playing/pitch`).set(currentPitch).catch(console.warn);
         }
+
+        publishHostState({ pitch: currentPitch });
 
         resetControlásTimer();
 

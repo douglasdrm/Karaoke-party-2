@@ -26,7 +26,7 @@
     <link rel="icon" type="image/x-icon" href="../Assets/icon.png">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="mobile.css?v=12">
+    <link rel="stylesheet" href="mobile.css?v=13">
 
     <!-- Driver.js Tour -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css" />
@@ -61,6 +61,8 @@
 </head>
 
 <body class="mobile-body">
+
+    <a id="djReturnLink" class="dj-return-link" href="cabine-mobile.html" hidden>← Cabine do DJ</a>
 
     <!-- ══════════════════════════════════
          WHATSAPP LEAD MODAL (NOVO)
@@ -583,6 +585,12 @@
         const urlParams = new URLSearchParams(window.location.search);
         // Aceita 'room' ou 'sala'
         let currentRoomCode = (urlParams.get('room') || urlParams.get('sala'))?.toUpperCase();
+
+        const djReturnLink = document.getElementById('djReturnLink');
+        if (djReturnLink && urlParams.get('from') === 'dj' && currentRoomCode) {
+            djReturnLink.href = `cabine-mobile.html?room=${encodeURIComponent(currentRoomCode)}`;
+            djReturnLink.hidden = false;
+        }
 
         function updateStatusBar(connected = false) {
             const dot = document.getElementById('statusIndicator');

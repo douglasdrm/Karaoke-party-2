@@ -6,47 +6,132 @@
     <meta name="theme-color" content="#080a12">
     <title>Cabine no celular | Karaoke Party</title>
     <link rel="icon" type="image/png" href="../Assets/icon.png">
-    <link rel="stylesheet" href="cabine-entry.css?v=1">
+    <link rel="stylesheet" href="cabine-entry.css?v=2">
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
 </head>
-<body class="mode-detail-page mobile-dj-page">
+<body class="mobile-control-page">
     <div class="entry-glow entry-glow-left" aria-hidden="true"></div>
-    <header class="detail-header">
-        <a class="back-link" href="cabine.html">← Modos da Cabine</a>
+
+    <header class="mobile-control-header">
+        <a class="back-link" href="cabine.html">← Modos</a>
         <img src="../Assets/logo.png" alt="Karaoke Party">
+        <button id="mobileDjLogout" class="header-text-button" type="button" hidden>Sair</button>
     </header>
 
-    <main class="detail-shell">
-        <section class="detail-hero">
-            <span class="detail-icon" aria-hidden="true">▯</span>
+    <main class="mobile-control-shell">
+        <section id="mobileDjLoading" class="mobile-state-card" aria-live="polite">
+            <span class="mobile-loader" aria-hidden="true"></span>
+            <p>Preparando a Cabine…</p>
+        </section>
+
+        <section id="mobileDjAuth" class="mobile-state-card" hidden>
             <p class="eyebrow">CABINE · CELULAR DO DJ</p>
-            <h1>Controle a festa sem deixar de participar.</h1>
-            <p>Este será o painel móvel do DJ. A mesma conta poderá comandar a fila e continuar usando a área do cantor para escolher suas próprias músicas.</p>
-            <span class="development-badge">Estrutura preparada · controles na próxima etapa</span>
+            <h1>Entre com a conta que abriu a festa.</h1>
+            <p class="state-description">A Cabine móvel reconhece somente salas pertencentes ao mesmo DJ.</p>
+
+            <button id="mobileDjGoogle" class="google-auth-button" type="button">
+                <span aria-hidden="true">G</span>
+                Entrar com Google
+            </button>
+
+            <div class="mobile-auth-divider"><span>ou</span></div>
+
+            <form id="mobileDjEmailForm" class="mobile-auth-form">
+                <label>
+                    <span>E-mail do DJ</span>
+                    <input id="mobileDjEmail" type="email" autocomplete="email" required>
+                </label>
+                <label>
+                    <span>Senha</span>
+                    <input id="mobileDjPassword" type="password" autocomplete="current-password" required>
+                </label>
+                <button class="primary-action" type="submit">Entrar na Cabine</button>
+            </form>
+            <p id="mobileDjAuthError" class="mobile-error" role="alert" hidden></p>
         </section>
 
-        <section class="role-preview" aria-label="Funções planejadas para a Cabine no celular">
-            <article>
-                <span>01</span>
-                <h2>Comandar</h2>
-                <p>Fila, reprodução, volume, tom e chamadas em uma interface de uso rápido.</p>
-            </article>
-            <article>
-                <span>02</span>
-                <h2>Cantar</h2>
-                <p>Acesso ao perfil de cantor e às próprias músicas sem trocar de conta.</p>
-            </article>
-            <article>
-                <span>03</span>
-                <h2>Alternar</h2>
-                <p>Troca clara entre o painel do DJ e a experiência do participante.</p>
-            </article>
+        <section id="mobileDjConnect" class="mobile-state-card" hidden>
+            <p class="eyebrow">CONECTAR À FESTA</p>
+            <h1>Qual sala você está comandando?</h1>
+            <p class="state-description">Digite o código de cinco caracteres exibido na Cabine PC ou na TV.</p>
+
+            <form id="mobileDjRoomForm" class="room-code-form">
+                <label for="mobileDjRoomCode">Código da sala</label>
+                <input id="mobileDjRoomCode" type="text" maxlength="5" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="ABCDE" required>
+                <button class="primary-action" type="submit">Conectar</button>
+            </form>
+            <p id="mobileDjRoomError" class="mobile-error" role="alert" hidden></p>
+            <p id="mobileDjIdentity" class="mobile-identity"></p>
         </section>
 
-        <div class="detail-actions">
-            <a class="primary-action" href="cabine-pc.html" data-preserve-query>Usar Cabine PC agora</a>
-            <a class="secondary-action" href="mobile.html">Entrar como cantor</a>
-        </div>
+        <section id="mobileDjDashboard" class="mobile-dashboard" hidden>
+            <header class="mobile-party-heading">
+                <div>
+                    <p id="mobileDjConnection" class="connection-label">CONECTADO</p>
+                    <h1 id="mobileDjPartyName">Minha festa</h1>
+                    <p><span id="mobileDjRoomLabel">Sala -----</span> · <span id="mobileDjAudienceCount">0 pessoas</span></p>
+                </div>
+                <button id="mobileDjChangeRoom" class="icon-text-button" type="button">Trocar sala</button>
+            </header>
+
+            <section class="now-playing-card" aria-labelledby="mobileNowTitle">
+                <div class="now-playing-label">
+                    <span id="mobileDjPlaybackDot" class="playback-dot"></span>
+                    <span id="mobileDjPlaybackLabel">AGUARDANDO</span>
+                </div>
+                <h2 id="mobileNowTitle">Nenhuma música no palco</h2>
+                <p id="mobileNowMeta">A fila aparecerá aqui quando a festa começar.</p>
+
+                <div class="mobile-playback-controls" aria-label="Controles de reprodução">
+                    <button type="button" data-host-command="restart" aria-label="Reiniciar música">
+                        <span aria-hidden="true">↺</span><small>Reiniciar</small>
+                    </button>
+                    <button class="main-control" type="button" data-host-command="play_pause" aria-label="Reproduzir ou pausar">
+                        <span id="mobileDjPlayIcon" aria-hidden="true">▶</span><small id="mobileDjPlayLabel">Iniciar</small>
+                    </button>
+                    <button type="button" data-host-command="skip" aria-label="Pular música">
+                        <span aria-hidden="true">≫</span><small>Pular</small>
+                    </button>
+                </div>
+
+                <div class="mobile-adjustments">
+                    <label for="mobileDjVolume">Volume <output id="mobileDjVolumeValue">70%</output></label>
+                    <input id="mobileDjVolume" type="range" min="0" max="1" step="0.05" value="0.7">
+                    <div class="tone-buttons" aria-label="Controle de tom">
+                        <button type="button" data-host-command="tone_down">Tom −</button>
+                        <button type="button" data-host-command="tone_reset">Tom 0</button>
+                        <button type="button" data-host-command="tone_up">Tom +</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mobile-queue-card" aria-labelledby="mobileQueueTitle">
+                <div class="mobile-section-heading">
+                    <div>
+                        <p class="eyebrow">ORDEM DA TV</p>
+                        <h2 id="mobileQueueTitle">Fila da festa</h2>
+                    </div>
+                    <span id="mobileDjQueueCount">0 músicas</span>
+                </div>
+                <ol id="mobileDjQueue" class="mobile-queue-list">
+                    <li class="empty-mobile-queue">A fila está vazia.</li>
+                </ol>
+            </section>
+
+            <nav class="mobile-role-switch" aria-label="Alternar função">
+                <div>
+                    <span>Também vai cantar?</span>
+                    <strong>Use a mesma conta como participante.</strong>
+                </div>
+                <a id="mobileDjSingerLink" href="mobile.html">Área do cantor →</a>
+            </nav>
+
+            <p id="mobileDjFeedback" class="mobile-command-feedback" role="status" aria-live="polite"></p>
+        </section>
     </main>
-    <script src="cabine-entry.js?v=1" defer></script>
+
+    <script src="cabine-mobile.js?v=1" defer></script>
 </body>
 </html>
