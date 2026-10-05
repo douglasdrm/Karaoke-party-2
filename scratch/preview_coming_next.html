@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview: Apresentação do Próximo Cantor</title>
+    <link rel="stylesheet" href="../App/cabine.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .preview-box {
+            position: relative;
+            width: 90vw;
+            height: 80vh;
+            border: 2px solid rgba(217, 70, 239, 0.4);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(217, 70, 239, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-box">
+        <div class="coming-next-overlay">
+            <div class="cn-stage-glow"></div>
+            <div class="cn-badge"><i class="fas fa-microphone-alt"></i> PRÓXIMO SHOW</div>
+            <div class="cn-content">
+                <div class="cn-phrase-container">
+                    <span class="cn-text-lead">Segura a emoção que lá vem a lenda:</span>
+                    <span class="cn-singer-name">DOUGLAS &amp; SAMANTHA</span>
+                    <span class="cn-text-trail">no microfone!</span>
+                </div>
+            </div>
+            <div class="cn-equalizer" aria-hidden="true">
+                <span class="cn-bar bar-1"></span>
+                <span class="cn-bar bar-2"></span>
+                <span class="cn-bar bar-3"></span>
+                <span class="cn-bar bar-4"></span>
+                <span class="cn-bar bar-5"></span>
+                <span class="cn-bar bar-6"></span>
+                <span class="cn-bar bar-7"></span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

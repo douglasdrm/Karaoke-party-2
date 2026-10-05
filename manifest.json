@@ -1,0 +1,21 @@
+{
+  "short_name": "Karaoke",
+  "name": "KARAOKE PARTY",
+  "icons": [
+    {
+      "src": "Assets/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "Assets/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "./App/mobile.html",
+  "background_color": "#060612",
+  "theme_color": "#d946ef",
+  "display": "standalone",
+  "orientation": "portrait"
+}

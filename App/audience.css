@@ -1,0 +1,30 @@
+html,body{zoom:1!important;width:100%;height:100%;margin:0;overflow:hidden!important;background:#000}
+#audienceStage,#audienceStage #playerContainer{position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;border-radius:0;background:#000;overflow:hidden}
+#audienceStage{pointer-events:none}#audienceStage #player{position:absolute;inset:0;width:100%;height:100%;max-height:none!important;aspect-ratio:auto;margin:0;border-radius:0}
+#audienceStage video{width:100%;height:100%;object-fit:contain;background:#000}
+#audienceToolbar{position:fixed;z-index:10000000;top:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;max-width:calc(100vw - 32px);padding:12px 16px;border:1px solid #674487;border-radius:12px;background:#171222ee;color:#eee;font:14px/1.4 system-ui;transition:opacity .2s}
+#audienceToolbar button{border:1px solid #b773ef;border-radius:8px;background:#583174;color:white;padding:10px 16px;white-space:nowrap;cursor:pointer;font:inherit}
+body.toolbar-hidden #audienceToolbar{opacity:0;pointer-events:none}
+#audienceStatus{position:fixed;inset:0;z-index:9000000;display:grid;place-content:center;text-align:center;padding:40px;background:#0c0915;color:#eee;font:22px/1.5 system-ui}#audienceStatus[hidden]{display:none}
+.audience-ambient{display:grid;place-content:center;width:100%;height:100%;background:radial-gradient(ellipse,#191033,#05050b);font:500 30px/1.5 system-ui;letter-spacing:5px;color:white;text-align:center}
+#audienceStage #ambientContainer iframe{width:100%!important;height:100%!important;border:0;display:block}
+
+/* Compact presentation overlays, away from the song title and bottom ticker. */
+#audienceToolbar{top:10px;left:12px;transform:none;padding:0;border:0;background:transparent;box-shadow:none}
+#audienceToolbar button{padding:7px 11px;font-size:12px;background:#171222cc;border-color:#ffffff30}
+
+/* Audience-only vote toast: 1.5s visible, then a short fade. */
+#audienceStage #publicScoreDisplay{top:clamp(110px,16vh,180px)!important;right:24px;animation:none!important;opacity:0;visibility:hidden;transform:translateY(5px);transition:opacity .3s ease,transform .3s ease,visibility .3s;pointer-events:none}
+#audienceStage.vibe-active #publicScoreDisplay{opacity:1;visibility:visible;transform:translateY(0)}
+#audienceStage #reactionContainer{position:absolute;inset:0;z-index:2147483641;pointer-events:none}
+
+/* Composição pública: fila no topo, vídeo ao centro e rankings na base. */
+#audienceStage .ranking-ticker{left:0;right:0;bottom:0;z-index:1800}
+#audienceStage .ranking-ticker-track{animation-duration:90s}
+#audienceStage .party-ranking-board{width:100%;height:100%}
+
+/* A identidade do DJ fica sob a logo, liberando o rodapé para o placar. */
+
+
+#audienceStage #djFooter,#audienceStage #djFooter i{animation:none!important;opacity:1!important}
+@media(max-width:700px){#audienceToolbar span{display:none}}

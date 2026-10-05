@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9CFQJSJJDS"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-9CFQJSJJDS');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KARAOKE PARTY | A Melhor Experiência de Karaokê Online</title>
+    <meta name="description" content="Transforme sua festa com o Karaoke Party! Sistema 100% online com controle pelo celular, pedidos via QR Code e catálogo gigante.">
+    
+    <link rel="icon" type="image/png" href="Assets/icon.png">
+    <link rel="stylesheet" href="site.css?v=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://karaoke.unodev.com.br">
+    <meta property="og:title" content="KARAOKE PARTY | A Melhor Experiência de Karaokê Online">
+    <meta property="og:description" content="Transforme sua festa com o Karaoke Party! Sistema 100% online com controle pelo celular, pedidos via QR Code e catálogo gigante.">
+    <meta property="og:image" content="https://karaoke.unodev.com.br/Assets/logo.png">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://karaoke.unodev.com.br">
+    <meta name="twitter:title" content="KARAOKE PARTY | A Melhor Experiência de Karaokê Online">
+    <meta name="twitter:description" content="Transforme sua festa com o Karaoke Party! Sistema 100% online com controle pelo celular, pedidos via QR Code e catálogo gigante.">
+    <meta name="twitter:image" content="https://karaoke.unodev.com.br/Assets/logo.png">
+</head>
+<body class="landing-page-root">
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <!-- ─── Landing Page Premium ─── -->
+    <section id="landingPage">
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="hero-content">
+                <img src="Assets/logo.png" alt="Logo" class="hero-logo">
+                <h1 class="hero-title">TRANSFORME SEU EVENTO EM UM <span class="highlight">SHOW PROFISSIONAL</span></h1>
+                <p class="hero-subtitle">
+                    O sistema de Karaokê mais completo do Brasil. <br>
+                    Mais de 19 mil músicas em Full HD com controle total pelo smartphone.
+                </p>
+                <div class="hero-btns">
+                    <button class="btn-primary" onclick="window.location.href='App/mobile.html'" aria-label="Acessar lista de músicas">
+                        <div class="btn-content">
+                            <span class="btn-label">LISTA DE MÚSICAS</span>
+                            <span class="btn-sublabel">Área do Cantor</span>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button class="btn-secondary" onclick="window.location.href='App/cabine.html'" aria-label="Testar grátis ou fazer login">
+                        <div class="btn-content">
+                            <span class="btn-label">KARAOKÊ</span>
+                            <span class="btn-sublabel">Teste grátis ou faça login</span>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.5; text-align: center;">
+                    * Ideal para festas particulares, aniversários e encontros em família.
+                </p>
+            </div>
+            
+            <div class="hero-badges">
+                <div class="badge-item"><i class="fas fa-check-circle"></i> +19k Músicas FHD</div>
+                <div class="badge-item"><i class="fas fa-check-circle"></i> Controle p/ Celular</div>
+                <div class="badge-item"><i class="fas fa-check-circle"></i> Sem Aparelhos Caros</div>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="features-section">
+            <h2 class="section-title">POR QUE ESCOLHER O <span class="highlight">KARAOKE PARTY</span>?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>Controle Remoto</h3>
+                    <p>Seus convidados pedem músicas, veem a letra e votam direto do smartphone.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-music"></i>
+                    <h3>Catálogo Gigante</h3>
+                    <p>Milhares de músicas atualizadas, com busca instantânea por artista ou código.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-sliders-h"></i>
+                    <h3>Controle de Tom</h3>
+                    <p>Aumente ou diminua a tonalidade da música em tempo real para o cantor.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-star"></i>
+                    <h3>Vibe da Galera</h3>
+                    <p>Sistema de votação interativo que gera uma nota média baseada na opinião do público.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção de Planos (Pricing) -->
+        <section class="pricing-section" id="planos">
+            <h2 class="section-title">ESCOLHA O SEU <span class="highlight">PLANO</span></h2>
+            <p style="opacity: 0.6; margin-top: 10px;">Pague só pelo que usar, ou assine e aproveite o ano todo.</p>
+
+            <!-- Abas -->
+            <div class="pricing-tabs">
+                <button class="tab-btn active" onclick="showTab('avulso', this)" aria-label="Ver planos avulsos">
+                    <i class="fas fa-clock"></i> Avulso por Horas
+                </button>
+                <button class="tab-btn" onclick="showTab('assinatura', this)" aria-label="Ver planos de assinatura">
+                    <i class="fas fa-calendar-check"></i> Assinatura Mensal/Anual
+                </button>
+            </div>
+
+            <!-- Tab: Avulso -->
+            <div id="tab-avulso" class="pricing-grid tab-content active-tab">
+                <!-- Avulso 3h -->
+                <div class="plan-card">
+                    <div class="plan-hour-badge">3h</div>
+                    <h3>TARDINHA</h3>
+                    <p>Aquela reunião rápida em família</p>
+                    <div class="price">R$ 10<span>/3 horas</span></div>
+                    <div class="savings">Pagamento único</div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Todas as funções VIP</li>
+                        <li><i class="fas fa-check"></i> Acesso por 3 horas</li>
+                        <li><i class="fas fa-check"></i> +19k músicas FHD</li>
+                        <li><i class="fas fa-check"></i> Sem renovação automática</li>
+                    </ul>
+                    <button class="btn-plan" onclick="startCheckout('avulso3h')" aria-label="Comprar plano Tardinha">COMPRAR AGORA</button>
+                </div>
+
+                <!-- Avulso 8h -->
+                <div class="plan-card recommended">
+                    <div class="plan-badge">Mais Popular</div>
+                    <div class="plan-hour-badge">8h</div>
+                    <h3>FESTA</h3>
+                    <p>A festa do começo ao fim</p>
+                    <div class="price">R$ 15<span>/8 horas</span></div>
+                    <div class="savings">Pagamento único</div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Todas as funções VIP</li>
+                        <li><i class="fas fa-check"></i> Acesso por 8 horas</li>
+                        <li><i class="fas fa-check"></i> +19k músicas FHD</li>
+                        <li><i class="fas fa-check"></i> Suporte via Web</li>
+                    </ul>
+                    <button class="btn-plan" onclick="startCheckout('avulso8h')" aria-label="Comprar plano Festa Avulso">COMPRAR AGORA</button>
+                </div>
+
+                <!-- Avulso 24h -->
+                <div class="plan-card">
+                    <div class="plan-hour-badge">24h</div>
+                    <h3>FINAL DE SEMANA</h3>
+                    <p>Sexta à noite até sábado à noite</p>
+                    <div class="price">R$ 25<span>/24 horas</span></div>
+                    <div class="savings">Pagamento único</div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Todas as funções VIP</li>
+                        <li><i class="fas fa-check"></i> Acesso por 24 horas</li>
+                        <li><i class="fas fa-check"></i> +19k músicas FHD</li>
+                        <li><i class="fas fa-check"></i> Sem preocupação com tempo</li>
+                    </ul>
+                    <button class="btn-plan" onclick="startCheckout('avulso24h')" aria-label="Comprar plano Final de Semana">COMPRAR AGORA</button>
+                </div>
+
+                <!-- Avulso 48h -->
+                <div class="plan-card">
+                    <div class="plan-hour-badge">48h</div>
+                    <h3>FERIADO</h3>
+                    <p>Dois dias seguidos de muita animação</p>
+                    <div class="price">R$ 35<span>/48 horas</span></div>
+                    <div class="savings">Pagamento único</div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Todas as funções VIP</li>
+                        <li><i class="fas fa-check"></i> Acesso por 48 horas</li>
+                        <li><i class="fas fa-check"></i> +19k músicas FHD</li>
+                        <li><i class="fas fa-check"></i> Ideal para feriados prolongados</li>
+                    </ul>
+                    <button class="btn-plan" onclick="startCheckout('avulso48h')" aria-label="Comprar plano Feriado">COMPRAR AGORA</button>
+                </div>
+            </div>
+
+            <!-- Tab: Assinatura -->
+            <div id="tab-assinatura" class="pricing-grid tab-content" style="display:none;">
+                <!-- Casual -->
+                <div class="plan-card">
+                    <h3>CASUAL</h3>
+                    <p>Usa quando quer, sem compromisso</p>
+                    <div class="price">R$ 40<span>/mês</span></div>
+                    <div class="savings">Cancela quando quiser</div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Salas ilimitadas</li>
+                        <li><i class="fas fa-check"></i> +19k músicas FHD</li>
+                        <li><i class="fas fa-check"></i> Pedidos pelo celular</li>
+                        <li><i class="fas fa-check"></i> Pontuação + Votação</li>
+                    </ul>
+                    <button class="btn-plan" onclick="startCheckout('casual')" aria-label="Assinar plano Casual">ASSINAR AGORA</button>
+                </div>
+
+                <!-- Festa -->
+                <div class="plan-card">
+                    <h3>FESTA</h3>
+                    <p>Paga trimestral, usa nas festas do ano</p>
+                    <div class="price">R$ 99<span>/trimestre</span></div>
+                    <div class="savings">= R$ 33/mês (-17%)</div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> <strong>Tudo do Casual</strong></li>
+                        <li><i class="fas fa-check"></i> Suporte via WhatsApp</li>
+                        <li><i class="fas fa-check"></i> Ideal para datas festivas</li>
+                        <li><i class="fas fa-check"></i> Acesso prioritário</li>
+                    </ul>
+                    <button class="btn-plan" onclick="startCheckout('festa')" aria-label="Assinar plano Festa Trimestral">ASSINAR AGORA</button>
+                </div>
+
+                <!-- Semestral -->
+                <div class="plan-card recommended">
+                    <div class="plan-badge">Recomendado</div>
+                    <h3>SEMESTRAL</h3>
+                    <p>Meio ano de karaokê sem preocupação</p>
+                    <div class="price">R$ 189<span>/semestre</span></div>
+                    <div class="savings">= R$ 31,50/mês (-21%)</div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> <strong>Tudo do Festa</strong></li>
+                        <li><i class="fas fa-check"></i> 6 meses garantidos</li>
+                        <li><i class="fas fa-check"></i> Cobre todas as festas do semestre</li>
+                        <li><i class="fas fa-check"></i> Suporte prioritário</li>
+                    </ul>
+                    <button class="btn-plan" onclick="startCheckout('semestral')" aria-label="Assinar plano Semestral">ASSINAR AGORA</button>
+                </div>
+
+                <!-- Anual -->
+                <div class="plan-card">
+                    <h3>ANUAL</h3>
+                    <p>Paga uma vez, esquece o ano todo</p>
+                    <div class="price">R$ 349<span>/ano</span></div>
+                    <div class="savings">= R$ 29/mês (-27%)</div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> <strong>Tudo do Semestral</strong></li>
+                        <li><i class="fas fa-check"></i> Melhor custo-benefício</li>
+                        <li><i class="fas fa-check"></i> Acesso o ano todo</li>
+                        <li><i class="fas fa-check"></i> Sem surpresas</li>
+                    </ul>
+                    <button class="btn-plan" onclick="startCheckout('anual')" aria-label="Assinar plano Anual">ASSINAR AGORA</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção: Monte seu Karaokê em Casa -->
+        <section class="equipment-section" id="equipamentos">
+            <div style="text-align:center; margin-bottom: 10px;">
+                <h2 class="section-title">MONTE SEU <span class="highlight">KARAOKÊ EM CASA</span></h2>
+                <p style="opacity:0.6; margin-top:10px; max-width:600px; margin:10px auto 0;">Não tem equipamento? Sem problema. Montamos um guia do básico ao incrível para você escolher o que faz sentido.</p>
+            </div>
+
+            <!-- TIER 1: ESSENCIAL -->
+            <div class="eq-tier">
+                <div class="eq-tier-header eq-essential">
+                    <div class="eq-tier-icon">✅</div>
+                    <div>
+                        <div class="eq-tier-name">ESSENCIAL</div>
+                        <div class="eq-tier-desc">O mínimo para cantar hoje mesmo</div>
+                    </div>
+                </div>
+                <div class="eq-products">
+
+                    <!-- Microfone Sem Fio -->
+                    <div class="eq-product">
+                        <div class="eq-product-top">
+                            <span class="eq-emoji">🎤</span>
+                            <div>
+                                <div class="eq-product-name">Microfone Sem Fio</div>
+                                <div class="eq-product-tip">💡 Conecta na caixa via entrada P10 ou cabo P2. Sem fio = liberdade para andar pela festa.</div>
+                            </div>
+                        </div>
+                        <div class="eq-product-links">
+                            <a href="https://meli.la/16oS1hH" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 1</a>
+                            <a href="https://meli.la/32UzuY8" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 2</a>
+                            <a href="https://meli.la/2YZG7po" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 3</a>
+                            <a href="https://meli.la/1zeVR2g" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 4</a>
+                            <a href="https://meli.la/1ig7yt1" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 5</a>
+                            <a href="https://meli.la/21PLnNH" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 6</a>
+                            <a href="https://meli.la/26VwnDZ" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 7</a>
+                        </div>
+                    </div>
+
+                    <!-- Caixa de Som -->
+                    <div class="eq-product">
+                        <div class="eq-product-top">
+                            <span class="eq-emoji">🔊</span>
+                            <div>
+                                <div class="eq-product-name">Caixa de Som Bluetooth</div>
+                                <div class="eq-product-tip">💡 Ligar o notebook via Bluetooth ou cabo P2. Escolha uma com entrada para microfone para melhor qualidade.</div>
+                            </div>
+                        </div>
+                        <div class="eq-product-links">
+                            <a href="https://meli.la/24ikiKi" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 1</a>
+                            <a href="https://meli.la/2YqGFFT" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 2</a>
+                            <a href="https://meli.la/1ZKc9yA" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 3</a>
+                            <a href="https://meli.la/2iDWYkH" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 4</a>
+                            <a href="https://meli.la/2HrZBvD" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 5</a>
+                        </div>
+                    </div>
+
+                    <!-- Cabos -->
+                    <div class="eq-product">
+                        <div class="eq-product-top">
+                            <span class="eq-emoji">🔌</span>
+                            <div>
+                                <div class="eq-product-name">Cabos (HDMI + P2)</div>
+                                <div class="eq-product-tip">💡 Cabo HDMI: liga o notebook/PC na TV. Cabo P2: liga microfone ou caixa que não tem Bluetooth.</div>
+                            </div>
+                        </div>
+                        <div class="eq-product-links">
+                            <span class="eq-label">HDMI:</span>
+                            <a href="https://meli.la/1UdrMJL" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 1</a>
+                            <a href="https://meli.la/2UNn8bz" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 2</a>
+                            <a href="https://meli.la/1q18nRw" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 3</a>
+                            <span class="eq-label">P2:</span>
+                            <a href="https://meli.la/1q18nRw" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 1</a>
+                            <a href="https://meli.la/1q2Mr9S" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 2</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TIER 2: RECOMENDADO -->
+            <div class="eq-tier">
+                <div class="eq-tier-header eq-recommended">
+                    <div class="eq-tier-icon">⭐</div>
+                    <div>
+                        <div class="eq-tier-name">RECOMENDADO</div>
+                        <div class="eq-tier-desc">Para uma experiência ainda melhor</div>
+                    </div>
+                </div>
+                <div class="eq-products">
+
+                    <!-- Kit Combo -->
+                    <div class="eq-product">
+                        <div class="eq-product-top">
+                            <span class="eq-emoji">🎤🔊</span>
+                            <div>
+                                <div class="eq-product-name">Kit Caixa + Microfone</div>
+                                <div class="eq-product-tip">💡 Já vêm calibrados para funcionar juntos. Melhor custo-benefício — você compra tudo de uma vez e evita incompatibilidade.</div>
+                            </div>
+                        </div>
+                        <div class="eq-product-links">
+                            <a href="https://meli.la/2MNmtwT" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 1</a>
+                            <a href="https://meli.la/1WAvy5g" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 2</a>
+                            <a href="https://meli.la/1NzYgNp" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 3</a>
+                        </div>
+                    </div>
+
+                    <!-- Projetor -->
+                    <div class="eq-product">
+                        <div class="eq-product-top">
+                            <span class="eq-emoji">📽️</span>
+                            <div>
+                                <div class="eq-product-name">Projetor</div>
+                                <div class="eq-product-tip">💡 Substitui a TV e projeta em qualquer parede branca. Liga via HDMI no notebook. Dá um visual de cinema na sala.</div>
+                            </div>
+                        </div>
+                        <div class="eq-product-links">
+                            <a href="https://meli.la/1wKuusK" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 1</a>
+                            <a href="https://meli.la/1fak2zv" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 2</a>
+                            <a href="https://meli.la/1sZCqdh" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 3</a>
+                            <a href="https://meli.la/31z1dAj" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 4</a>
+                        </div>
+                    </div>
+
+                    <!-- Notebook -->
+                    <div class="eq-product">
+                        <div class="eq-product-top">
+                            <span class="eq-emoji">💻</span>
+                            <div>
+                                <div class="eq-product-name">Notebook</div>
+                                <div class="eq-product-tip">💡 O Karaoke Party roda 100% no navegador, sem instalar nada. Conecta na TV via HDMI e o notebook vira o sistema da festa.</div>
+                            </div>
+                        </div>
+                        <div class="eq-product-links">
+                            <a href="https://meli.la/2r1Juok" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 1</a>
+                            <a href="https://meli.la/32Zd1uX" class="eq-ml-btn" target="_blank" rel="nofollow">Opção 2</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TIER 3: NÍVEL FESTA -->
+            <div class="eq-tier">
+                <div class="eq-tier-header eq-festa">
+                    <div class="eq-tier-icon">🎉</div>
+                    <div>
+                        <div class="eq-tier-name">NÍVEL FESTA</div>
+                        <div class="eq-tier-desc">Deixa a festa inesquecível</div>
+                    </div>
+                </div>
+                <div class="eq-products">
+
+                    <!-- Iluminação LED -->
+                    <div class="eq-product">
+                        <div class="eq-product-top">
+                            <span class="eq-emoji">💡</span>
+                            <div>
+                                <div class="eq-product-name">Iluminação LED / Canhão de Luz</div>
+                                <div class="eq-product-tip">💡 Cria a atmosfera de show sem precisar de nada especial. Plug & play na tomada, coloca no teto ou numa mesa. Vai de azul ao arco-íris.</div>
+                            </div>
+                        </div>
+                        <div class="eq-product-links">
+                            <a href="https://lista.mercadolivre.com.br/canhao-luz-led-festa" class="eq-ml-btn eq-search" target="_blank" rel="nofollow"><i class="fas fa-search"></i> Buscar no ML</a>
+                        </div>
+                    </div>
+
+                    <!-- Máquina de Fumaça -->
+                    <div class="eq-product">
+                        <div class="eq-product-top">
+                            <span class="eq-emoji">💨</span>
+                            <div>
+                                <div class="eq-product-name">Máquina de Fumaça</div>
+                                <div class="eq-product-tip">💡 Efeito dramático na entrada do cantor. Funciona com água destilada + fluido de fumaça. Faz a galera pirar!</div>
+                            </div>
+                        </div>
+                        <div class="eq-product-links">
+                            <a href="https://lista.mercadolivre.com.br/maquina-de-fumaca" class="eq-ml-btn eq-search" target="_blank" rel="nofollow"><i class="fas fa-search"></i> Buscar no ML</a>
+                        </div>
+                    </div>
+
+                    <!-- Strobo / Efeitos -->
+                    <div class="eq-product">
+                        <div class="eq-product-top">
+                            <span class="eq-emoji">🎛️</span>
+                            <div>
+                                <div class="eq-product-name">Strobo / Laser / Efeitos</div>
+                                <div class="eq-product-tip">💡 Strobo cria o efeito pisca de discoteca. Laser projeta estrelas e padrões nas paredes. Juntos transformam qualquer sala em clube.</div>
+                            </div>
+                        </div>
+                        <div class="eq-product-links">
+                            <a href="https://lista.mercadolivre.com.br/strobo-led-festa" class="eq-ml-btn eq-search" target="_blank" rel="nofollow"><i class="fas fa-search"></i> Buscar no ML</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <p style="margin-top:30px; font-size:0.75rem; opacity:0.3; text-align:center;">* Links de afiliado. Preços e disponibilidade podem variar.</p>
+        </section>
+
+
+
+        <!-- Seção Mobile/QR -->
+        <div class="mobile-experience">
+            <div class="mobile-text">
+                <h2>EXPERIÊNCIA <span class="highlight">MOBILE COMPLETA</span></h2>
+                <p>Chega de pastas de papel e filas no DJ. Com um simples QR Code, todos na festa têm o catálogo na palma da mão.</p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-qrcode"></i> Leitor de QR Code integrado.</li>
+                    <li><i class="fas fa-heart"></i> Salve suas músicas favoritas.</li>
+                    <li><i class="fas fa-history"></i> Histórico de canções cantadas.</li>
+                </ul>
+            </div>
+            <div class="mobile-mockup">
+                <div class="mockup-screen">
+                    <img src="Assets/logo.png" style="width: 40px; margin-bottom: 10px;" alt="Logo do Karaoke Party na tela do celular">
+                    <div class="mockup-line"></div>
+                    <div class="mockup-line shorter"></div>
+                    <div class="mockup-btn">PEDIR MÚSICA</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Final -->
+        <div class="cta-banner">
+            <h2>PRONTO PARA DAR UM <span class="highlight">UP NA SUA FESTA</span>?</h2>
+            <p>Teste agora gratuitamente por 30 minutos e veja a mágica acontecer.</p>
+            <button class="btn-primary large" onclick="window.location.href='App/cabine.html'" aria-label="Começar teste grátis de 30 minutos">
+                <i class="fas fa-bolt"></i> COMEÇAR TESTE GRÁTIS DE 30 MIN
+            </button>
+            <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.7; text-align: center;">
+                Dúvidas? <a href="https://wa.me/5521967192554" target="_blank" style="color: #d946ef; text-decoration: none; font-weight: bold;">Fale conosco no WhatsApp</a>
+            </p>
+        </div>
+    </section>
+
+    <footer style="padding: 40px; text-align: center; opacity: 0.3; font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.05);">
+        KARAOKE PARTY SaaS &copy; 2026 - karaoke.unodev.com.br
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-functions-compat.js"></script>
+
+    <style>
+        /* ── Abas de Planos ── */
+        .pricing-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 30px auto 40px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 50px;
+            padding: 6px;
+            width: fit-content;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #d946ef, #a020f0);
+            color: white;
+            box-shadow: 0 5px 20px rgba(217,70,239,0.35);
+        }
+        .tab-btn:not(.active):hover {
+            color: white;
+            background: rgba(255,255,255,0.06);
+        }
+
+        /* ── Ajuste da Grade de Planos (4 colunas) ── */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ── Badge de Horas no Card ── */
+        .plan-hour-badge {
+            position: absolute;
+            top: -1px;
+            left: 30px;
+            background: linear-gradient(135deg, #d946ef, #a020f0);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 900;
+            padding: 3px 12px;
+            border-radius: 0 0 12px 12px;
+            letter-spacing: 1px;
+        }
+
+        /* ── Seção de Equipamentos (GUIA PREMIUM) ── */
+        .equipment-section {
+            padding: 100px 20px;
+            background: radial-gradient(circle at center, rgba(160, 32, 240, 0.03), transparent);
+        }
+        .eq-tier {
+            max-width: 1100px;
+            margin: 0 auto 50px auto;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .eq-tier-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 30px 40px;
+            color: white;
+        }
+        .eq-essential { background: linear-gradient(90deg, #10b98122, transparent); border-bottom: 2px solid #10b981; }
+        .eq-recommended { background: linear-gradient(90deg, #d946ef22, transparent); border-bottom: 2px solid #d946ef; }
+        .eq-festa { background: linear-gradient(90deg, #00f2ff22, transparent); border-bottom: 2px solid #00f2ff; }
+
+        .eq-tier-icon { font-size: 2.2rem; }
+        .eq-tier-name { font-weight: 900; font-size: 1.5rem; letter-spacing: 2px; font-family: 'Montserrat'; }
+        .eq-tier-desc { font-size: 0.9rem; opacity: 0.6; }
+
+        .eq-products { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .eq-product {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transition: transform 0.3s;
+        }
+        .eq-product:hover { background: rgba(255, 255, 255, 0.04); transform: scale(1.01); }
+
+        .eq-product-top { display: flex; align-items: flex-start; gap: 20px; }
+        .eq-emoji { font-size: 2.5rem; line-height: 1; }
+        .eq-product-name { font-weight: 800; font-size: 1.1rem; color: #fff; margin-bottom: 5px; }
+        .eq-product-tip {
+            font-size: 0.85rem;
+            color: #ffd200;
+            background: rgba(255, 210, 0, 0.05);
+            padding: 12px 18px;
+            border-radius: 12px;
+            border-left: 3px solid #ffd200;
+            line-height: 1.6;
+        }
+
+        .eq-product-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .eq-label { font-size: 0.75rem; font-weight: 700; opacity: 0.4; text-transform: uppercase; margin-right: 5px; }
+
+        .eq-ml-btn {
+            background: #fff159;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .eq-ml-btn:hover { background: #ffe600; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255,241,89,0.3); }
+
+        .eq-search { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.1); }
+        .eq-search:hover { background: rgba(255,255,255,0.2); color: white; }
+
+        @media (max-width: 768px) {
+            .eq-tier-header { padding: 20px; flex-direction: column; text-align: center; }
+            .eq-product-top { flex-direction: column; text-align: center; align-items: center; }
+            .eq-product-links { justify-content: center; }
+            .pricing-tabs { flex-direction: column; width: 90%; }
+            .tab-btn { justify-content: center; width: 100%; }
+        }
+    </style>
+
+    <script>
+        function showTab(tab, btn) {
+            // Esconde todos os conteúdos
+            document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+            // Remove active de todos os botões
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            // Mostra o tab selecionado
+            document.getElementById('tab-' + tab).style.display = 'grid';
+            btn.classList.add('active');
+        }
+    </script>
+
+    <script>
+
+        // Configuração idêntica ao App
+        const firebaseConfig = {
+            apiKey: "AIzaSyCnZ8hoE3NGNx2t490Yw12AxlCqVjSguig",
+            authDomain: "karaoke-party-online.firebaseapp.com",
+            databaseURL: "https://karaoke-party-online-default-rtdb.firebaseio.com",
+            projectId: "karaoke-party-online",
+            storageBucket: "karaoke-party-online.firebasestorage.app",
+            messagingSenderId: "1059879567957",
+            appId: "1:1059879567957:web:d4cb88563b39fe08934adc"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const functions = firebase.functions();
+
+        async function startCheckout(planId) {
+            let user = auth.currentUser;
+            
+            // 1. Se não estiver logado, tenta o login via Google
+            if (!user) {
+                try {
+                    const provider = new firebase.auth.GoogleAuthProvider();
+                    localStorage.setItem("checkoutPlan", planId); await auth.signInWithRedirect(provider); return;
+                } catch (loginError) {
+                    console.error("Erro no Login:", loginError);
+                    alert("Para assinar, você precisa estar logado.");
+                    return;
+                }
+            }
+
+            // 2. Chama a Cloud Function para criar a sessão do Stripe
+            const btn = document.querySelector(`button[onclick="startCheckout('${planId}')"]`);
+            
+            try {
+                if (btn) {
+                    btn.innerText = "CARREGANDO...";
+                    btn.disabled = true;
+                }
+
+                const createCheckoutSession = functions.httpsCallable('createCheckoutSession');
+                const result = await createCheckoutSession({ uid: user.uid, planId: planId });
+                
+                // 3. Redireciona para o Stripe
+                window.location.href = result.data.url;
+            } catch (error) {
+                console.error("Erro no Checkout:", error);
+                alert("Erro ao iniciar pagamento: " + error.message);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerText = "ASSINAR AGORA";
+                }
+            }
+        }
+
+        // --- NOVO: Auto-disparo após Login ---
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const savedPlan = localStorage.getItem("checkoutPlan");
+                if (urlParams.get('action') === 'checkout') {
+                    const planId = urlParams.get('plan');
+                    setTimeout(() => startCheckout(planId), 1000);
+                } else if (savedPlan) {
+                    localStorage.removeItem("checkoutPlan");
+                    setTimeout(() => startCheckout(savedPlan), 1000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9CFQJSJJDS"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-9CFQJSJJDS');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KARAOKE PARTY | Painel Admin Master</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@300;400;600&display=swap');
+        
+        :root {
+            --bg: #060612;
+            --accent: #d946ef;
+            --blue: #00f2ff;
+            --glass: rgba(255,255,255,0.05);
+            --border: rgba(255,255,255,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: var(--glass);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 2px;
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, var(--accent), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .stat-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .stat-card .value { font-size: 2.5rem; font-weight: 900; color: var(--blue); }
+        .stat-card .label { font-size: 0.8rem; opacity: 0.5; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            margin: 40px 0 20px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent);
+        }
+
+        .user-list {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow-x: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        th {
+            background: rgba(255,255,255,0.03);
+            text-align: left;
+            padding: 15px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+        }
+
+        td {
+            padding: 10px 15px;
+            border-top: 1px solid var(--border);
+            font-size: 0.75rem;
+            vertical-align: middle;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid var(--accent);
+            object-fit: cover;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .status-vip { background: rgba(0,255,0,0.1); color: #00ff00; border: 1px solid #00ff00; }
+        .status-trial { background: rgba(255,165,0,0.1); color: #ffa500; border: 1px solid #ffa500; }
+        .status-expired { background: rgba(255,0,0,0.1); color: #ff4444; border: 1px solid #ff4444; }
+        .status-banned { background: #ff0000; color: white; border: 1px solid #ff0000; }
+
+        .row-banned { opacity: 0.5; filter: grayscale(0.8); background: rgba(255,0,0,0.05) !important; }
+
+        .action-group {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .plan-select {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 6px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            outline: none;
+            cursor: pointer;
+            width: 130px;
+        }
+
+        .plan-select option { background: var(--bg); }
+
+        .btn-action {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.65rem;
+            font-weight: 600;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-activate { border-color: #00ff00; color: #00ff00; }
+        .btn-activate:hover { background: rgba(0,255,0,0.1); }
+        .btn-cancel { border-color: #ff4444; color: #ff4444; }
+        .btn-cancel:hover { background: rgba(255,0,0,0.1); }
+
+        /* Abas Estilizadas */
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: rgba(255,255,255,0.02);
+            padding: 5px;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+            width: fit-content;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            opacity: 0.5;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            opacity: 1;
+            box-shadow: 0 5px 15px rgba(217,70,239,0.3);
+        }
+
+        .tab-btn i { font-size: 0.9rem; }
+
+        #loginOverlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-login {
+            background: white;
+            color: black;
+            padding: 18px 40px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .wa-btn {
+            color: #25D366;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+        }
+
+        .wa-btn:hover { text-decoration: underline; }
+
+        /* Loader */
+        #loader {
+            display: none;
+            margin-top: 20px;
+            color: var(--blue);
+        }
+
+        /* Dashboard do DJ (v16) */
+        #djDashboard { display: none; margin-top: 20px; }
+        .dj-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .dj-card { background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 25px; }
+        .dj-card h3 { font-family: 'Montserrat', sans-serif; font-size: 0.9rem; color: var(--accent); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .badge-system { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+        .badge-icon { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; opacity: 0.2; transition: 0.3s; background: rgba(255,255,255,0.05); }
+        .badge-icon.unlocked { opacity: 1; box-shadow: 0 0 15px currentColor; border: 2px solid currentColor; }
+        .badge-bronze { color: #cd7f32; }
+        .badge-silver { color: #c0c0c0; }
+        .badge-gold { color: #ffd700; }
+
+        .stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.85rem; }
+        .progress-container-mini { flex: 1; height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; margin: 0 15px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--blue); transition: 0.5s; }
+        
+        .peak-bar-container { display: flex; align-items: flex-end; gap: 3px; height: 100px; margin-top: 20px; border-bottom: 1px solid var(--border); }
+        .peak-bar { flex: 1; background: var(--accent); border-radius: 3px 3px 0 0; transition: 0.5s; position: relative; min-height: 2px; }
+        .peak-bar:hover::after { content: attr(data-label); position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 0.6rem; white-space: nowrap; background: #000; padding: 2px 5px; border-radius: 4px; }
+        
+        .hall-fame-table { width: 100%; font-size: 0.75rem; border-collapse: collapse; }
+        .hall-fame-table th { opacity: 0.5; font-weight: 400; text-align: left; padding: 5px; border-bottom: 1px solid var(--border); }
+        .hall-fame-table td { padding: 8px 5px; border-bottom: 1px dotted var(--border); }
+    
+        #djDashboard .dj-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); align-items: stretch; }
+        #djDashboard .dj-card { min-width: 0; padding: 24px; }
+        #djDashboard .dj-hall { grid-column: 1 / -1; order: 3; }
+        #djDashboard .dj-peak { grid-column: 1 / -1 !important; order: 4; }
+        #djDashboard .hall-fame-table { min-width: 0; width: 100%; table-layout: fixed; }
+        #djDashboard .hall-fame-table th, #djDashboard .hall-fame-table td { white-space: normal; overflow-wrap: anywhere; padding: 12px 10px; }
+        #djDashboard .hall-fame-table th:first-child { width: 32%; }
+        #djDashboard .hall-fame-table th:last-child { width: 64px; }
+        #djDashboard .hall-fame-table td:last-child { color: var(--blue); font-weight: 900; text-align: right; }
+        #djDashboard .hall-fame-table th:last-child { text-align: right; }
+        .dj-caption { color: #a6a4b6; font-size: .75rem; line-height: 1.6; margin: -8px 0 18px; }
+        .dj-genre-row { margin: 16px 0; }
+        .dj-genre-label { display: flex; gap: 12px; justify-content: space-between; font-size: .83rem; margin-bottom: 8px; }
+        .dj-genre-label span:first-child { overflow-wrap: anywhere; }
+        .dj-genre-label span:last-child { white-space: nowrap; color: var(--blue); }
+        .dj-genre-row .progress-container-mini { margin: 0; height: 7px; }
+        .dj-empty { color: #a6a4b6; padding: 20px 0; font-size: .85rem; }
+        @media (max-width: 640px) {
+            #djDashboard .dj-grid { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+            #djDashboard .dj-card { padding: 18px; }
+            #djDashboard .hall-fame-table th, #djDashboard .hall-fame-table td { padding: 10px 4px; }
+        }
+    </style>
+    <link rel="stylesheet" href="party-features.css?v=3">
+</head>
+<body>
+
+    <div id="loginOverlay">
+        <img src="../Assets/logo.png" style="width: 80px; margin-bottom: 30px;">
+        <button class="btn-login" onclick="login()">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" width="24" style="pointer-events:none;">
+            ENTRAR NA MINHA CABINE
+        </button>
+        <div id="loader"><i class="fas fa-spinner fa-spin"></i> Validando acesso...</div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div>
+                <h1>ADMIN DASHBOARD</h1>
+                <p style="font-size: 0.7rem; opacity: 0.5;">Gestão de DJs e Monetização</p>
+            </div>
+            <div style="display:flex; gap:12px;">
+                <button class="btn-action" style="border-color:var(--blue); color:var(--blue); padding: 10px 20px;" onclick="exportLeadsCSV()">
+                    <i class="fas fa-file-csv"></i> EXPORTAR LEADS
+                </button>
+                <button class="btn-action" style="padding: 10px 20px;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> SAIR</button>
+            </div>
+        </header>
+
+        <nav id="ownerViewControls" style="display:none;gap:10px;flex-wrap:wrap;margin:16px 0;">
+            <button class="party-button" onclick="setOwnerView('master')">Administração do sistema</button>
+            <button class="party-button" onclick="setOwnerView('dj')">Meu painel de DJ</button>
+            <a class="party-button" href="cabine.html">Voltar à cabine</a>
+        </nav>
+        <div id="masterView" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="value" id="statTotalUsers">0</div>
+                    <div class="label">Total de DJs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value" id="statActiveSubs">0</div>
+                    <div class="label">VIPs Ativos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value" id="statTrialCount">0</div>
+                    <div class="label">DJs em Trial</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value" id="statLeadsCount">0</div>
+                    <div class="label">Leads / Cantores</div>
+                </div>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="tab-btn" id="btnAccessHistory">HISTÓRICO DE ACESSOS</button>
+                <button class="tab-btn active" id="btnTabUsers" onclick="switchTab('users')"><i class="fas fa-users"></i> USUÁRIOS</button>
+                <button class="tab-btn" id="btnTabCatalog" onclick="switchTab('catalog')"><i class="fas fa-music"></i> CATÁLOGO</button>
+                <button class="tab-btn" id="btnTabFeedback" onclick="switchTab('feedback')"><i class="fas fa-comment-alt"></i> FEEDBACKS</button>
+            </div>
+
+            <div class="user-list" id="userListContainer">
+                <!-- SUB-FILTROS DE USUÁRIOS (v24.2) -->
+                <div id="userSubFilters" style="display: flex; gap: 8px; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; border: 1px solid var(--border); width: fit-content;">
+                    <button class="tab-btn active" id="btnFilterAll" onclick="switchTab('all')" style="padding: 6px 12px; font-size: 0.65rem;">TODOS DJs</button>
+                    <button class="tab-btn" id="btnFilterVip" onclick="switchTab('vip')" style="padding: 6px 12px; font-size: 0.65rem;"><i class="fas fa-crown" style="color:#FFD700;"></i> VIPS</button>
+                    <button class="tab-btn" id="btnFilterTrial" onclick="switchTab('trial')" style="padding: 6px 12px; font-size: 0.65rem;">EM TRIAL</button>
+                    <button class="tab-btn" id="btnFilterLeads" onclick="switchTab('leads')" style="padding: 6px 12px; font-size: 0.65rem;"><i class="fas fa-microphone"></i> LEADS/CANTORES</button>
+                </div>
+
+                <table id="mainAdminTable">
+                    <thead id="tableHeader">
+                        <!-- Cabeçalho Dinâmico -->
+                    </thead>
+                    <tbody id="userTableBody">
+                        <!-- Gerado via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- VIEW DO CATÁLOGO -->
+            <div id="catalogView" style="display: none;">
+                <div class="catalog-actions" style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; background: var(--glass); padding: 15px; border-radius: 15px; border: 1px solid var(--border);">
+                    <div style="flex: 1; min-width: 250px;">
+                        <input type="text" id="catalogSearch" placeholder="Buscar no catálogo (Artista, Música ou Código)..." 
+                               style="width:100%; padding:10px 15px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border); color:white; outline:none;">
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn-action btn-activate" onclick="showAddSongModal()"><i class="fas fa-plus"></i> NOVA MÚSICA</button>
+                        <button class="btn-action" style="border-color:#ffaa00; color:#ffaa00;" onclick="showImportModal()"><i class="fas fa-file-import"></i> IMPORTAR FHD</button>
+                        <button class="btn-action" id="btnPublishCatalog" style="border-color:var(--blue); color:var(--blue);" onclick="publishCatalog()">
+                            <i class="fas fa-cloud-upload-alt"></i> PUBLICAR NO SITE
+                        </button>
+                        <button class="btn-action" onclick="exportCatalogCSV()"><i class="fas fa-download"></i> EXPORTAR CSV</button>
+                    </div>
+                </div>
+
+                <div class="user-list">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">CÓDIGO</th>
+                                <th>ARTISTA</th>
+                                <th>TÍTULO</th>
+                                <th>INÍCIO DA LETRA</th>
+                                <th style="width: 120px;">ESTILO</th>
+                                <th style="width: 80px;">IDIOMA</th>
+                                <th style="width: 100px;">AÇÕES</th>
+                            </tr>
+                        </thead>
+                        <tbody id="catalogTableBody">
+                            <tr><td colspan="7" style="text-align:center; padding:40px; opacity:0.5;">Carregando músicas...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="catalogPagination" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px; align-items: center;"></div>
+            </div>
+
+            <!-- VIEW DE FEEDBACK -->
+            <div id="feedbackView" style="display: none;">
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="btn-action active" id="btnSubSugestoes" onclick="switchFeedbackSub('suggestions')">SUGESTÕES</button>
+                    <button class="btn-action" id="btnSubReports" onclick="switchFeedbackSub('reports')">ERROS/BUGS</button>
+                </div>
+                <div class="user-list">
+                    <table>
+                        <thead id="feedbackTableHead"></thead>
+                        <tbody id="feedbackTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- DJ PERSONAL DASHBOARD (v16) -->
+        <div id="djDashboard">
+            <div class="dj-grid">
+                <div class="dj-card">
+                    <h3>💎 Minha Assinatura</h3>
+                    <div id="djPlanBadge" style="margin-bottom: 15px;"></div>
+                    <div class="stat-row">
+                        <span>Expira em:</span>
+                        <strong id="djExpDate">—</strong>
+                    </div>
+                    <div class="stat-row">
+                        <span>Músicas cantadas:</span>
+                        <strong id="djTotalSongs">0</strong>
+                    </div>
+                    <div class="badge-system" id="djBadges">
+                        <div class="badge-icon badge-bronze" title="Bronze: 50 músicas"><i class="fas fa-medal"></i></div>
+                        <div class="badge-icon badge-silver" title="Prata: 200 músicas"><i class="fas fa-award"></i></div>
+                        <div class="badge-icon badge-gold" title="Ouro: 500 músicas"><i class="fas fa-crown"></i></div>
+                    </div>
+                </div>
+
+                <div class="dj-card dj-hall">
+                    <h3>🏆 Hall da Fama (Top Notas)</h3>
+                    <table class="hall-fame-table">
+                        <thead><tr><th>Cantor</th><th>Música</th><th>Nota</th></tr></thead>
+                        <tbody id="djHallFame"></tbody>
+                    </table>
+                </div>
+
+                <div class="dj-card">
+                    <h3>🎵 Gêneros mais tocados</h3>
+                    <p class="dj-caption" id="djGenreCaption">Somente músicas com gênero identificado.</p><div id="djGenreStats"></div>
+                </div>
+
+                <div class="dj-card dj-peak">
+                    <h3>🔥 Horário de Pico (Bombando)</h3>
+                    <div class="peak-bar-container" id="djPeakGraph"></div>
+                    <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:0.6rem; opacity:0.5;">
+                        <span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>23h</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-storage-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCnZ8hoE3NGNx2t490Yw12AxlCqVjSguig",
+            authDomain: "karaoke-party-online.firebaseapp.com",
+            databaseURL: "https://karaoke-party-online-default-rtdb.firebaseio.com",
+            projectId: "karaoke-party-online",
+            storageBucket: "karaoke-party-online.firebasestorage.app",
+            messagingSenderId: "1059879567957",
+            appId: "1:1059879567957:web:d4cb88563b39fe08934adc"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
+
+        const ADMIN_EMAIL = "douglasdrm@gmail.com"; 
+
+        let loadedOwnerDashboard = false;
+        function setOwnerView(view) {
+            const user = auth.currentUser;
+            if (!user || user.email !== ADMIN_EMAIL) return;
+            document.getElementById('masterView').style.display = view === 'master' ? 'block' : 'none';
+            document.getElementById('djDashboard').style.display = view === 'dj' ? 'block' : 'none';
+            if (view === 'dj' && !loadedOwnerDashboard) { loadDJData(user.uid); loadedOwnerDashboard = true; }
+        }
+        auth.onAuthStateChanged(user => {
+            document.getElementById('masterView').style.display = 'none';
+            document.getElementById('djDashboard').style.display = 'none';
+            document.getElementById('ownerViewControls').style.display = 'none';
+            document.getElementById('loginOverlay').style.display = user ? 'none' : 'flex';
+            if (!user) { loadedOwnerDashboard = false; return; }
+            if (user.email === ADMIN_EMAIL) {
+                document.getElementById('ownerViewControls').style.display = 'flex';
+                setOwnerView('master');
+                switchTab('users');
+                initCatalogLogic();
+            } else {
+                document.getElementById('djDashboard').style.display = 'block';
+                loadDJData(user.uid);
+            }
+        });
+
+        function login() {
+            try {
+                document.getElementById('loader').style.display = 'block';
+                const provider = new firebase.auth.GoogleAuthProvider();
+                auth.signInWithPopup(provider).then(() => {
+                    location.reload();
+                }).catch(err => {
+                    console.error("❌ Erro Admin Login:", err);
+                    alert("Erro Firebase: " + err.code + " - " + err.message);
+                    document.getElementById('loader').style.display = 'none';
+                });
+            } catch(e) {
+                console.error("❌ Erro Catastrófico Admin:", e);
+                alert("Erro catastrófico: " + e.message);
+                document.getElementById('loader').style.display = 'none';
+            }
+        }
+
+        function logout() {
+            auth.signOut().then(() => location.reload());
+        }
+
+        let currentFilter = 'all';
+
+        window.switchTab = (tab) => {
+            const isUserFilter = ['all', 'vip', 'trial', 'leads', 'users'].includes(tab);
+            
+            if (isUserFilter) {
+                if (tab !== 'users') currentFilter = tab;
+                else if (currentFilter === 'catalog' || currentFilter === 'feedback') currentFilter = 'all';
+            } else {
+                currentFilter = tab;
+            }
+
+            // Áreas principais
+            document.getElementById('userListContainer').style.display = isUserFilter ? 'block' : 'none';
+            document.getElementById('catalogView').style.display = tab === 'catalog' ? 'block' : 'none';
+            document.getElementById('feedbackView').style.display = tab === 'feedback' ? 'block' : 'none';
+
+            // Estados dos botões PRINCIPAIS
+            document.getElementById('btnTabUsers').classList.toggle('active', isUserFilter);
+            document.getElementById('btnTabCatalog').classList.toggle('active', tab === 'catalog');
+            document.getElementById('btnTabFeedback').classList.toggle('active', tab === 'feedback');
+
+            // Estados dos botões de FILTRO
+            if (isUserFilter) {
+                document.getElementById('btnFilterAll').classList.toggle('active', currentFilter === 'all' || currentFilter === 'users');
+                document.getElementById('btnFilterVip').classList.toggle('active', currentFilter === 'vip');
+                document.getElementById('btnFilterTrial').classList.toggle('active', currentFilter === 'trial');
+                document.getElementById('btnFilterLeads').classList.toggle('active', currentFilter === 'leads');
+            }
+
+            if (tab === 'catalog') {
+                if (!fullCatalog || fullCatalog.length === 0) initCatalogLogic();
+                renderCatalog();
+            }
+            if (tab === 'feedback') loadFeedback();
+            if (isUserFilter) loadData();
+        };
+
+        // Lógica de Feedback (v24.1)
+        let currentFeedbackSub = 'suggestions';
+        window.switchFeedbackSub = (sub) => {
+            currentFeedbackSub = sub;
+            document.getElementById('btnSubSugestoes').classList.toggle('active', sub === 'suggestions');
+            document.getElementById('btnSubReports').classList.toggle('active', sub === 'reports');
+            loadFeedback();
+        };
+
+        window.loadFeedback = () => {
+            KaraokeAdmin.feedback(currentFeedbackSub);
+        };
+        const legacyLoadFeedback = () => {
+            const tbody = document.getElementById('feedbackTableBody');
+            const thead = document.getElementById('feedbackTableHead');
+            
+            if (!thead || !tbody) return;
+            
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px; opacity:0.5;"><i class="fas fa-spinner fa-spin"></i> Carregando...</td></tr>';
+
+            if (currentFeedbackSub === 'suggestions') {
+                thead.innerHTML = `<tr><th>USUÁRIO</th><th>SALA</th><th>SUGESTÃO</th><th>DATA</th><th>AÇÕES</th></tr>`;
+            } else {
+                thead.innerHTML = `<tr><th>MÚSICA</th><th>TIPO</th><th>DETALHES</th><th>USUÁRIO</th><th>AÇÕES</th></tr>`;
+            }
+
+            db.ref(`feedback/${currentFeedbackSub}`).on('value', snap => {
+                const data = snap.val();
+                tbody.innerHTML = '';
+                if (!data) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px; opacity:0.5;">Nenhuma mensagem nesta categoria.</td></tr>';
+                    return;
+                }
+
+                Object.keys(data).reverse().forEach(key => {
+                    const item = data[key];
+                    const tr = document.createElement('tr');
+                    const date = item.timestamp ? new Date(item.timestamp).toLocaleString('pt-BR') : '—';
+
+                    if (currentFeedbackSub === 'suggestions') {
+                        tr.innerHTML = `
+                            <td><div style="font-weight:600;">${item.user_name || 'Anônimo'}</div><div style="font-size:0.6rem; opacity:0.5;">${item.user_email || ''}</div></td>
+                            <td style="font-family:monospace; color:var(--accent); font-weight:bold;">${item.room || '—'}</td>
+                            <td style="max-width:300px; white-space:normal;">${item.msg}</td>
+                            <td style="font-size:0.75rem; opacity:0.6;">${date}</td>
+                            <td><button class="btn-action btn-cancel" onclick="deleteFeedback('${key}')"><i class="fas fa-trash"></i> RESOLVIDO</button></td>
+                        `;
+                    } else {
+                        tr.innerHTML = `
+                            <td style="font-weight:600;">${item.song || '—'}</td>
+                            <td style="color:#ff4444; font-weight:700;">${(item.type || 'ERRO').toUpperCase()}</td>
+                            <td style="max-width:300px; white-space:normal;">${item.details || '—'}</td>
+                            <td><div style="font-weight:600;">${item.user_name || '—'}</div></td>
+                            <td><button class="btn-action btn-cancel" onclick="deleteFeedback('${key}')"><i class="fas fa-trash"></i> RESOLVIDO</button></td>
+                        `;
+                    }
+                    tbody.appendChild(tr);
+                });
+            });
+        };
+
+        window.deleteFeedback = async (key) => {
+            if (!confirm("Deseja marcar como resolvido e remover este feedback?")) return;
+            try {
+                await db.ref(`feedback/${currentFeedbackSub}/${key}`).remove();
+            } catch (e) {
+                alert("Erro ao excluir: " + e.message);
+            }
+        };
+
+        function loadData() {
+            db.ref('users').on('value', snap => {
+                const users = snap.val() || {};
+                const tbody = document.getElementById('userTableBody');
+                const thead = document.getElementById('tableHeader');
+                
+                if (!tbody) return;
+                tbody.innerHTML = '';
+                
+                // Configura Cabeçalho conforme o Filtro
+                if (currentFilter === 'leads') {
+                    thead.innerHTML = `<tr><th>Nome / E-mail</th><th>WhatsApp</th><th>Última Atividade</th><th>Ação</th></tr>`;
+                } else {
+                    thead.innerHTML = `<tr><th>DJ / E-mail</th><th>Nome DJ</th><th>Status</th><th>WhatsApp</th><th>Músicas</th><th>Plano</th><th>Vencimento</th><th>Ações Rápidas</th></tr>`;
+                }
+
+                let totalHost = 0, activeVIP = 0, inTrial = 0, totalLeads = 0;
+
+                Object.entries(users).forEach(([uid, user]) => {
+                    const sub = user.subscription || { active: false, status: 'trial', plan: 'Gratuito' };
+                    let isExpired = sub.expiresAt && sub.expiresAt < Date.now();
+
+                    // Stats Globais
+                    if (user.isHost) {
+                        totalHost++;
+                        if (sub.active && !isExpired) activeVIP++;
+                        else if (!isExpired) inTrial++;
+                    } else {
+                        totalLeads++;
+                    }
+
+                    // FILTRAGEM PARA RENDERIZAÇÃO
+                    if (currentFilter === 'leads' && user.isHost) return;
+                    if (currentFilter !== 'leads' && !user.isHost) return;
+                    if (currentFilter === 'vip' && (!sub.active || isExpired)) return;
+                    if (currentFilter === 'trial' && (sub.active || isExpired)) return;
+
+                    const tr = document.createElement('tr');
+                    
+                    if (user.isHost) {
+                        const expDate = sub.expiresAt ? new Date(sub.expiresAt).toLocaleDateString('pt-BR') : '—';
+                        const statusClass = sub.active && !isExpired ? 'status-vip' : (isExpired ? 'status-expired' : 'status-trial');
+                        const statusText = sub.active && !isExpired ? 'VIP ATIVO' : (isExpired ? 'EXPIRADO' : 'TRIAL');
+                        
+                        // WhatsApp com ícone compacto e tratamento robusto de tipo e DDI
+                        const cleanWa = String(user.whatsapp || '').replace(/\D/g, '');
+                        const waLink = cleanWa ? `https://wa.me/${cleanWa.startsWith('55') ? cleanWa : '55' + cleanWa}` : '';
+                        const waHtml = waLink ? `
+                            <a href="${waLink}" class="wa-btn" target="_blank" title="${user.whatsapp}">
+                                <i class="fab fa-whatsapp" style="font-size:1.2rem;"></i>
+                            </a>` : '<i class="fab fa-whatsapp" style="opacity:0.2; font-size:1.2rem;" title="Não informado"></i>';
+
+                        tr.innerHTML = `
+                            <td>
+                                <div class="user-info">
+                                    <img src="${user.photo || ''}" onerror="this.src='https://via.placeholder.com/38'">
+                                    <div>
+                                        <div style="font-weight:600;">${user.name}</div>
+                                        <div style="font-size:0.65rem; opacity:0.5;">${user.email}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="font-weight:700; color:var(--accent-primary);">${user.djName || '---'}</td>
+                            <td><span class="status-badge ${user.isBanned ? 'status-banned' : statusClass}">${user.isBanned ? 'BANIDO' : statusText}</span></td>
+                            <td style="text-align:center;">${waHtml}</td>
+                            <td style="text-align:center; font-weight:700;">${user.stats?.totalSongsPlayed || 0}</td>
+                            <td style="opacity:0.8;">${sub.plan || 'Gratuito'}</td>
+                            <td style="font-weight:600;">${expDate}</td>
+                            <td>
+                                <div class="action-group">
+                                    <select class="plan-select" id="sel-${uid}">
+                                         <option value="avulso3h">Avulso 3h</option>
+                                         <option value="avulso8h">Avulso 8h</option>
+                                         <option value="avulso24h">Avulso 24h</option>
+                                         <option value="avulso48h">Avulso 48h</option>
+                                         <option value="casual">Casual (30d)</option>
+                                         <option value="festa">Festa (90d)</option>
+                                         <option value="semestral">Semestral (180d)</option>
+                                         <option value="anual">Anual (365d)</option>
+                                         <option value="vitalicio">Vitalício</option>
+                                    </select>
+                                    <button class="btn-action btn-activate" onclick="applyPlan('${uid}')">OK</button>
+                                    <button class="btn-action btn-cancel" onclick="cancelSub('${uid}')" title="Reset Trial"><i class="fas fa-undo"></i></button>
+                                    <button class="btn-action" onclick="toggleBan('${uid}', ${!!user.isBanned})" style="color:${user.isBanned ? '#00ff00' : '#ff0000'}; border-color:${user.isBanned ? '#00ff00' : '#ff0000'};" title="${user.isBanned ? 'Desbanir' : 'Banir'}">
+                                        <i class="fas ${user.isBanned ? 'fa-user-check' : 'fa-user-slash'}"></i>
+                                    </button>
+                                    <button class="btn-action btn-cancel" onclick="deleteUser('${uid}')" title="DELETAR USUÁRIO">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                    } else {
+                        // RENDERIZAÇÃO LEADS
+                        const date = user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('pt-BR') : '—';
+                        const cleanWa = String(user.whatsapp || '').replace(/\D/g, '');
+                        const waLink = cleanWa ? `https://wa.me/${cleanWa.startsWith('55') ? cleanWa : '55' + cleanWa}` : '';
+                        const waHtml = waLink ? `
+                            <a href="${waLink}" class="wa-btn" target="_blank">
+                                <i class="fab fa-whatsapp"></i> ${user.whatsapp}
+                            </a>` : '<i class="fab fa-whatsapp" style="opacity:0.2;"></i> —';
+
+                        tr.innerHTML = `
+                            <td>
+                                <div class="user-info">
+                                    <img src="${user.photo || ''}" onerror="this.src='https://via.placeholder.com/38'">
+                                    <div>
+                                        <div style="font-weight:600;">${user.name}</div>
+                                        <div style="font-size:0.65rem; opacity:0.5;">${user.email}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>${waHtml}</td>
+                            <td style="opacity:0.6;">${date}</td>
+                            <td>
+                                <div class="action-group">
+                                    ${waLink ? `
+                                    <button class="btn-action btn-activate" onclick="window.open('${waLink}?text=Olá ${encodeURIComponent((user.name || '').split(' ')[0])}, tudo bem? Vi que você curtiu o nosso Karaokê!')">
+                                        <i class="fab fa-whatsapp"></i> CONTATO
+                                    </button>
+                                    ` : ''}
+                                    <button class="btn-action" onclick="toggleBan('${uid}', ${!!user.isBanned})" style="color:${user.isBanned ? '#00ff00' : '#ff0000'}; border-color:${user.isBanned ? '#00ff00' : '#ff0000'};" title="${user.isBanned ? 'Desbanir' : 'Banir'}">
+                                        <i class="fas ${user.isBanned ? 'fa-user-check' : 'fa-user-slash'}"></i>
+                                    </button>
+                                    <button class="btn-action btn-cancel" onclick="deleteUser('${uid}')" title="DELETAR USUÁRIO">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                    }
+                    if (user.isBanned) tr.classList.add('row-banned');
+                    tbody.appendChild(tr);
+                });
+
+                document.getElementById('statTotalUsers').innerText = totalHost;
+                document.getElementById('statActiveSubs').innerText = activeVIP;
+                document.getElementById('statTrialCount').innerText = inTrial;
+                document.getElementById('statLeadsCount').innerText = totalLeads;
+            }, err => {
+                console.error("❌ Erro ao ler lista de usuários:", err);
+                if (err.code === 'PERMISSION_DENIED') {
+                    alert("Acesso Negado: Suas regras do Firebase ainda não permitem que você veja a lista de usuários.");
+                }
+            });
+        }
+
+        function loadDJData(uid) {
+            db.ref('users/' + uid).on('value', snap => {
+                const data = snap.val() || {};
+                const stats = data.stats || { totalSongsPlayed: 0, genres: {}, stats_records: [], peakHours: {} };
+                const sub = data.subscription || { plan: 'Gratuito', expiresAt: 0, active: false };
+                
+                // 1. Assinatura e Status
+                const isPremium = sub.active && (sub.expiresAt > Date.now());
+                document.getElementById('djPlanBadge').innerHTML = `
+                    <span class="status-badge ${isPremium ? 'status-vip' : 'status-expired'}">
+                        ${sub.plan.toUpperCase()} ${isPremium ? 'ATIVO' : 'EXPIRADO'}
+                    </span>
+                `;
+                document.getElementById('djExpDate').innerText = sub.expiresAt ? new Date(sub.expiresAt).toLocaleDateString('pt-BR') : '—';
+                document.getElementById('djTotalSongs').innerText = stats.totalSongsPlayed || 0;
+
+                // 2. Badges de Gamificação
+                const badges = document.querySelectorAll('#djBadges .badge-icon');
+                const counts = stats.totalSongsPlayed || 0;
+                [50, 200, 500].forEach((minimum, i) => badges[i].classList.toggle('unlocked', counts >= minimum));
+
+                // 3. Hall da Fama (Top Notas)
+                const hfBody = document.getElementById('djHallFame');
+                hfBody.innerHTML = '';
+                const records = Object.values(stats.stats_records || {}).filter(r => r && typeof r.song === 'string' && r.song.trim() && r.song !== '—' && r.score !== null && r.score !== '' && Number.isFinite(Number(r.score))).sort((a, b) => Number(b.score) - Number(a.score)).slice(0, 10);
+                records.forEach(r => {
+                    const tr = document.createElement('tr');
+                    [r.singer || 'Anônimo', r.song, Number(r.score)].forEach(value => { const td = document.createElement('td'); td.textContent = value; tr.appendChild(td); });
+                    hfBody.appendChild(tr);
+                });
+                if(records.length === 0) hfBody.innerHTML = '<tr><td colspan="3" style="text-align:center; opacity:0.3; padding:20px;">Nenhum recorde ainda</td></tr>';
+
+                // 4. Gêneros Favoritos
+                const genreContainer = document.getElementById('djGenreStats');
+                genreContainer.innerHTML = '';
+                const genres = PartyCore.genreRanking(stats.genres);
+                const totalG = genres.reduce((total, entry) => total + entry[1], 0);
+                document.getElementById('djGenreCaption').textContent = totalG
+                    ? totalG.toLocaleString('pt-BR') + ' músicas com gênero identificado. Percentuais calculados sobre essa base.'
+                    : 'Somente músicas com gênero identificado.';
+                genres.slice(0, 5).forEach(([name, count]) => {
+                    const pct = Math.round(count / totalG * 100);
+                    const row = document.createElement('div'); row.className = 'dj-genre-row';
+                    const label = document.createElement('div'); label.className = 'dj-genre-label';
+                    const title = document.createElement('span'); title.textContent = name;
+                    const value = document.createElement('span'); value.textContent = count.toLocaleString('pt-BR') + ' · ' + pct + '%';
+                    label.append(title, value);
+                    const track = document.createElement('div'); track.className = 'progress-container-mini';
+                    const fill = document.createElement('div'); fill.className = 'progress-fill'; fill.style.width = pct + '%';
+                    track.appendChild(fill); row.append(label, track); genreContainer.appendChild(row);
+                });
+                if (!genres.length) { const empty = document.createElement('p'); empty.className = 'dj-empty'; empty.textContent = 'Ainda não há músicas com gênero identificado.'; genreContainer.appendChild(empty); }
+
+                // 5. Horário de Pico
+                const peakGraph = document.getElementById('djPeakGraph');
+                peakGraph.innerHTML = '';
+                const peakData = stats.peakHours || {};
+                const maxPeak = Math.max(...Object.values(peakData), 1);
+                
+                for(let h=0; h<24; h++) {
+                    const val = peakData[h] || 0;
+                    const hPct = (val / maxPeak) * 100;
+                    const bar = document.createElement('div');
+                    bar.className = 'peak-bar';
+                    bar.style.height = `${Math.max(2, hPct)}%`;
+                    bar.setAttribute('data-label', `${h}h: ${val} ped.`);
+                    peakGraph.appendChild(bar);
+                }
+            });
+        }
+
+        function toggleBan(uid, wasBanned) {
+            const action = wasBanned ? 'DESBANIR' : 'BANIR';
+            if (!confirm(`Deseja realmente ${action} este usuário?`)) return;
+            
+            KaraokeAdmin.change(uid, action, {
+                isBanned: !wasBanned,
+                bannedAt: !wasBanned ? firebase.database.ServerValue.TIMESTAMP : null
+            }).then(saved => {
+                if (saved) alert(`Usuário ${wasBanned ? 'desbloqueado' : 'banido'} com sucesso.`);
+            }).catch(error => alert('Alteração não realizada: ' + error.message));
+        }
+
+        function applyPlan(uid) {
+            const sel = document.getElementById('sel-' + uid);
+            const planKey = sel.value;
+            
+            let expiration = Date.now();
+            const planNames = { 
+                avulso3h: 'Avulso 3h',
+                avulso8h: 'Avulso 8h',
+                avulso24h: 'Avulso 24h',
+                avulso48h: 'Avulso 48h',
+                casual: 'Casual', 
+                festa: 'Festa', 
+                semestral: 'Semestral',
+                anual: 'Anual', 
+                vitalicio: 'Vitalício' 
+            };
+            
+            // Cálculo de Expiração
+            if(planKey === 'avulso3h') expiration += (3 * 60 * 60 * 1000);
+            else if(planKey === 'avulso8h') expiration += (8 * 60 * 60 * 1000);
+            else if(planKey === 'avulso24h') expiration += (24 * 60 * 60 * 1000);
+            else if(planKey === 'avulso48h') expiration += (48 * 60 * 60 * 1000);
+            else if(planKey === 'casual') expiration += (30 * 24 * 60 * 60 * 1000);
+            else if(planKey === 'festa') expiration += (90 * 24 * 60 * 60 * 1000);
+            else if(planKey === 'semestral') expiration += (180 * 24 * 60 * 60 * 1000);
+            else if(planKey === 'anual') expiration += (365 * 24 * 60 * 60 * 1000);
+            else if(planKey === 'vitalicio') expiration += (36500 * 24 * 60 * 60 * 1000); // 100 anos
+
+            if (!planNames[planKey]) { alert('Escolha um plano válido.'); return; }
+            KaraokeAdmin.change(uid, 'Ativar plano: ' + planNames[planKey], {
+                'subscription/active': true,
+                'subscription/status': 'active',
+                'subscription/plan': planNames[planKey],
+                'subscription/expiresAt': expiration,
+                'subscription/lastUpdate': firebase.database.ServerValue.TIMESTAMP,
+                'subscription/updatedBy': 'admin_manual'
+            }).then(saved => {
+                if (saved) alert(`Sucesso! Plano ${planNames[planKey].toUpperCase()} ativado.`);
+            }).catch(error => alert('Plano não alterado: ' + error.message));
+        }
+
+        function cancelSub(uid) {
+            if (!confirm("Deseja resetar a assinatura deste usuário?")) return;
+            KaraokeAdmin.change(uid, 'Reiniciar teste gratuito', {
+                subscription: { active: false, status: 'trial', plan: 'Free Trial', expiresAt: 0 },
+                trialUsedMs: 0
+            }).then(saved => { if (saved) alert('Teste gratuito reiniciado.'); }).catch(error => alert('Acesso não alterado: ' + error.message));
+        }
+
+        function deleteUser(uid) {
+            if (!confirm("⚠️ ATENÇÃO: Deseja realmente DELETAR este usuário? Isso removerá todos os dados dele do banco de dados.\n\nO login continuará existindo no Google/Email, mas ele será visto como um NOVO usuário ao entrar novamente.")) return;
+            
+            KaraokeAdmin.change(uid, 'Excluir cadastro', null).then(saved => {
+                if (saved) alert("Usuário removido com sucesso!");
+            }).catch(err => {
+                alert("Erro ao remover: " + err.message);
+            });
+        }
+
+        function exportLeadsCSV() {
+            db.ref('users').once('value', snap => {
+                const users = snap.val() || {};
+                let csvContent = "data:text/csv;charset=utf-8,Nome,Email,WhatsApp,Tipo,Status,Plano,Vencimento\n";
+                
+                Object.values(users).forEach(u => {
+                    const type = u.isHost ? "DJ/Host" : "Cantor/Lead";
+                    const sub = u.subscription || {};
+                    const exp = sub.expiresAt ? new Date(sub.expiresAt).toLocaleDateString('pt-BR') : '—';
+                    const whatsapp = u.whatsapp || "—";
+                    const line = `"${u.name || ''}","${u.email || ''}","${whatsapp}","${type}","${sub.status || 'trial'}","${sub.plan || '—'}","${exp}"`;
+                    csvContent += line + "\n";
+                });
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "leads_karaoke_SaaS.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }
+        // ─────────────────────────────────────────────────────────────────────────────
+        // LÓGICA DO GERENCIADOR DE CATÁLOGO (CMS)
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        let fullCatalog = [];
+        let filteredCatalog = [];
+        let catalogPage = 1;
+        const catalogPageSize = 50;
+        let isCatalogLoaded = false;
+
+        function initCatalogLogic() {
+            // Monitora busca
+            document.getElementById('catalogSearch').oninput = (e) => {
+                const term = e.target.value.toLowerCase().trim();
+                catalogPage = 1;
+                filterCatalog(term);
+            };
+
+            // Carga inicial
+            loadCatalogFromSource();
+        }
+
+        async function loadCatalogFromSource() {
+            // Tenta carregar do Database Master primeiro
+            db.ref('master_catalog').once('value').then(snap => {
+                const data = snap.val();
+                if (data && data.musicas) {
+                    fullCatalog = data.musicas;
+                    finishCatalogLoad();
+                } else {
+                    console.log("Master catalog vazio, usando fallback local.");
+                    loadLocalFallback();
+                }
+            }).catch(err => {
+                console.warn("Erro de permissão ou conexão no Master Catalog. Usando fallback local.", err);
+                loadLocalFallback();
+            });
+        }
+
+        function loadLocalFallback() {
+            fetch('songs.json')
+                .then(r => r.json())
+                .then(data => {
+                    fullCatalog = data.musicas || [];
+                    finishCatalogLoad();
+                })
+                .catch(err => {
+                    console.error("Falha crítica ao carregar songs.json local:", err);
+                    fullCatalog = [];
+                    finishCatalogLoad();
+                });
+        }
+
+        function finishCatalogLoad() {
+            isCatalogLoaded = true;
+            filteredCatalog = [...fullCatalog];
+            sortCatalog(filteredCatalog);
+            if (currentFilter === 'catalog') renderCatalog();
+        }
+
+        function sortCatalog(arr) {
+            arr.sort((a, b) => {
+                const artA = (a.artista || "").toLowerCase();
+                const artB = (b.artista || "").toLowerCase();
+                if (artA < artB) return -1;
+                if (artA > artB) return 1;
+                const titA = (a.titulo || "").toLowerCase();
+                const titB = (b.titulo || "").toLowerCase();
+                return titA.localeCompare(titB);
+            });
+        }
+
+        function filterCatalog(term) {
+            if (!term) {
+                filteredCatalog = [...fullCatalog];
+            } else {
+                filteredCatalog = fullCatalog.filter(m => 
+                    (m.artista || "").toLowerCase().includes(term) ||
+                    (m.titulo || "").toLowerCase().includes(term) ||
+                    (m.inicioletra || "").toLowerCase().includes(term) ||
+                    (m.codigo || "").toLowerCase().includes(term)
+                );
+            }
+            renderCatalog();
+        }
+
+        function renderCatalog() {
+            const tbody = document.getElementById('catalogTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const start = (catalogPage - 1) * catalogPageSize;
+            const end = start + catalogPageSize;
+            const pageItems = filteredCatalog.slice(start, end);
+
+            pageItems.forEach((song, idx) => {
+                const globalIdx = start + idx;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><input type="text" class="catalog-input" value="${song.codigo || ''}" onchange="updateSong(${globalIdx}, 'codigo', this.value)"></td>
+                    <td><input type="text" class="catalog-input" value="${song.artista || ''}" onchange="updateSong(${globalIdx}, 'artista', this.value)"></td>
+                    <td><input type="text" class="catalog-input" value="${song.titulo || ''}" onchange="updateSong(${globalIdx}, 'titulo', this.value)"></td>
+                    <td><input type="text" class="catalog-input" value="${song.inicioletra || ''}" onchange="updateSong(${globalIdx}, 'inicioletra', this.value)" placeholder="..."></td>
+                    <td><input type="text" class="catalog-input" value="${song.estilo || ''}" onchange="updateSong(${globalIdx}, 'estilo', this.value)"></td>
+                    <td><input type="text" class="catalog-input" style="text-align:center" value="${song.idioma || ''}" onchange="updateSong(${globalIdx}, 'idioma', this.value)"></td>
+                    <td>
+                        <div class="action-group">
+                            <button class="btn-action" onclick="editSongDetails(${globalIdx})"><i class="fas fa-edit"></i></button>
+                            <button class="btn-action btn-cancel" onclick="deleteSong(${globalIdx})"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            renderPagination();
+        }
+
+        function renderPagination() {
+            const container = document.getElementById('catalogPagination');
+            const totalPages = Math.ceil(filteredCatalog.length / catalogPageSize);
+            container.innerHTML = `
+                <button class="btn-action" ${catalogPage === 1 ? 'disabled' : ''} onclick="changeCatalogPage(-1)"><i class="fas fa-chevron-left"></i></button>
+                <span style="font-size:0.8rem; opacity:0.7">Página ${catalogPage} de ${totalPages || 1} (${filteredCatalog.length} músicas)</span>
+                <button class="btn-action" ${catalogPage >= totalPages ? 'disabled' : ''} onclick="changeCatalogPage(1)"><i class="fas fa-chevron-right"></i></button>
+            `;
+        }
+
+        window.changeCatalogPage = (delta) => {
+            catalogPage += delta;
+            renderCatalog();
+        };
+
+        window.updateSong = (filteredIdx, field, value) => {
+            const song = filteredCatalog[filteredIdx];
+            if (song) {
+                song[field] = value;
+                saveMasterCatalog();
+            }
+        };
+
+        window.editSongDetails = (filteredIdx) => {
+            const song = filteredCatalog[filteredIdx];
+            const newLyrics = prompt("Editar Início da Letra:", song.inicioletra || "");
+            if (newLyrics !== null) {
+                song.inicioletra = newLyrics;
+                saveMasterCatalog();
+                alert("Letra atualizada!");
+            }
+        };
+
+        window.deleteSong = (filteredIdx) => {
+            if (!confirm("Tem certeza que deseja excluir esta música do catálogo?")) return;
+            const songToDelete = filteredCatalog[filteredIdx];
+            fullCatalog = fullCatalog.filter(s => s !== songToDelete);
+            filteredCatalog.splice(filteredIdx, 1);
+            saveMasterCatalog();
+            renderCatalog();
+        };
+
+        window.showAddSongModal = () => {
+            const newSong = {
+                artista: "NOVO ARTISTA",
+                titulo: "NOVA MÚSICA",
+                codigo: "00000",
+                estilo: "Pop",
+                idioma: "BRA",
+                inicioletra: "",
+                pacote: "avu",
+                acervo: "avu"
+            };
+            fullCatalog.unshift(newSong);
+            filteredCatalog = [...fullCatalog];
+            catalogPage = 1;
+            renderCatalog();
+            saveMasterCatalog();
+        };
+
+        async function saveMasterCatalog() {
+            // Salva o estado atual no Realtime Database (Mestre)
+            db.ref('master_catalog').set({
+                lastUpdate: firebase.database.ServerValue.TIMESTAMP,
+                musicas: fullCatalog
+            }).catch(err => console.error("Erro ao salvar mestre:", err));
+        }
+
+        // Importa um songs_atualizado.json e publica direto no Firebase
+        window.importarCatalogoJSON = () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = e => {
+                const reader = new FileReader();
+                reader.onload = async (ev) => {
+                    try {
+                        const json = JSON.parse(ev.target.result);
+                        if (!json.musicas || !Array.isArray(json.musicas)) {
+                            alert('❌ Arquivo inválido. Certifique-se de selecionar o songs_atualizado.json');
+                            return;
+                        }
+                        // Injeta no escopo correto do admin
+                        fullCatalog = json.musicas;
+                        filteredCatalog = [...fullCatalog];
+                        renderCatalog();
+                        alert(`✅ ${fullCatalog.length} músicas carregadas!\n\nClicando OK, o sistema vai PUBLICAR tudo no site automaticamente.\nAguarde o aviso de conclusão.`);
+                        // Chama o publish que já tem acesso ao fullCatalog correto
+                        await publishCatalog();
+                    } catch(err) {
+                        alert('❌ Erro ao ler o arquivo: ' + err.message);
+                    }
+                };
+                reader.readAsText(e.target.files[0]);
+            };
+            input.click();
+        };
+
+        window.publishCatalog = async () => {
+            const btn = document.getElementById('btnPublishCatalog');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PREPARANDO MISSILE...';
+            btn.disabled = true;
+
+            try {
+                // 1. Organiza alfabeticamente
+                sortCatalog(fullCatalog);
+                
+                // 2. Fragmentação do Catálogo (v22)
+                const CHUNK_SIZE = 2000;
+                const totalChunks = Math.ceil(fullCatalog.length / CHUNK_SIZE);
+                console.log(`Iniciando publicação fragmentada: ${fullCatalog.length} músicas em ${totalChunks} partes.`);
+
+                // 3. Limpa partes antigas e sobe as novas
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> LIMPANDO NUVEM...';
+                await db.ref('catalog_chunks').remove();
+
+                for (let i = 0; i < totalChunks; i++) {
+                    const start = i * CHUNK_SIZE;
+                    const chunk = fullCatalog.slice(start, start + CHUNK_SIZE);
+                    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> SUBINDO PARTE ${i + 1}/${totalChunks}...`;
+                    await db.ref(`catalog_chunks/part_${i}`).set(chunk);
+                }
+
+                // 4. Sobe também o arquivo songs.json para compatibilidade de legado (opcional)
+                const jsonBlob = new Blob([JSON.stringify({ musicas: fullCatalog })], { type: 'application/json' });
+                await firebase.storage().ref('songs.json').put(jsonBlob);
+
+                // 5. Sinaliza conclusão e versão no Config
+                const newVersion = new Date().getTime();
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> FINALIZANDO...';
+                await db.ref('config/catalog').set({
+                    totalChunks: totalChunks,
+                    totalSongs: fullCatalog.length,
+                    version: String(newVersion),
+                    lastUpdated: firebase.database.ServerValue.TIMESTAMP,
+                    mode: 'fragmented'
+                });
+
+                alert(`🚀 MÍSSIL LANÇADO COM SUCESSO!\n\nTotal: ${fullCatalog.length} músicas\nPartes: ${totalChunks}\n\nTodos os DJs e Celulares vão se atualizar em segundos.`);
+            } catch (err) {
+                console.error("Erro no lançamento do míssil:", err);
+                alert("Erro catastrófico: " + err.message + "\n\nVerifique as permissões de gravação no Database.");
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+                renderCatalog();
+            }
+        };
+
+        window.showImportModal = () => {
+            const raw = prompt("Cole aqui o conteúdo da sua aba FHD (Excel) para importação em massa:");
+            if (!raw) return;
+
+            const lines = raw.trim().split('\n');
+            if (lines.length < 1) return;
+
+            const newSongs = [];
+            lines.forEach(line => {
+                const cols = line.split('\t');
+                if (cols.length >= 3) {
+                    newSongs.push({
+                        artista: cols[0]?.trim(),
+                        codigo: cols[1]?.trim(),
+                        titulo: cols[2]?.trim(),
+                        inicioletra: cols[3]?.trim() || "",
+                        pacote: cols[4]?.trim() || "avu",
+                        favorito: cols[5]?.trim() || "0",
+                        idioma: cols[6]?.trim() || "BRA",
+                        acervo: cols[7]?.trim() || "avu",
+                        lancamento: cols[8]?.trim() || "",
+                        estilo: cols[9]?.trim() || "Pop"
+                    });
+                }
+            });
+
+            if (confirm(`Deseja adicionar ${newSongs.length} músicas ao catálogo?`)) {
+                fullCatalog = [...newSongs, ...fullCatalog];
+                filteredCatalog = [...fullCatalog];
+                saveMasterCatalog();
+                renderCatalog();
+                alert("Importação concluída! Clique em PUBLICAR para liberar no site.");
+            }
+        };
+
+        window.exportCatalogCSV = () => {
+            let csv = "Artista\tCódigo\tTítulo\tInício Letra\tIdioma\tEstilo\n";
+            fullCatalog.forEach(s => {
+                csv += `${s.artista}\t${s.codigo}\t${s.titulo}\t${s.inicioletra}\t${s.idioma}\t${s.estilo}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/tab-separated-values' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `catalogo_reserva_${new Date().toLocaleDateString()}.tsv`;
+            a.click();
+        };
+
+        // Estilos para os inputs da tabela
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .catalog-input {
+                width: 100%;
+                background: transparent;
+                border: none;
+                color: white;
+                font-family: inherit;
+                font-size: 0.75rem;
+                padding: 5px;
+                outline: none;
+                border-bottom: 1px solid transparent;
+                transition: 0.3s;
+            }
+            .catalog-input:focus {
+                background: rgba(255,255,255,0.05);
+                border-bottom-color: var(--accent);
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+    <script src="party-core.js?v=1"></script>
+    <script src="party-ui.js?v=1"></script>
+    <script src="party-admin.js?v=1"></script>
+    <script>KaraokeAdmin.init({db, auth});</script>
+</body>
+</html>

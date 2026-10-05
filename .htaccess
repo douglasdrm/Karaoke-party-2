@@ -1,0 +1,21 @@
+<IfModule mod_headers.c>
+    # 1. Proteção contra Clickjacking - permite iframes do Firebase Auth (necessário para signInWithRedirect)
+    # X-Frame-Options SAMEORIGIN foi removido pois bloqueava o iframe interno do Firebase
+    # A política de frame-ancestors na CSP abaixo cobre esta proteção
+
+    # 2. Proteção contra XSS (impede MIME-sniffing)
+    Header set X-Content-Type-Options "nosniff"
+
+    # 3. HSTS (Força o uso de HTTPS)
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+    # 4. Referrer-Policy: permite que o redirect do Google Auth funcione corretamente
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # 5. Content-Security-Policy compatível com Firebase Auth (signInWithRedirect) e demais recursos
+    # - script-src: permite scripts do site, inline, eval e CDNs necessários
+    # - frame-src: permite iframes do Firebase Auth (firebaseapp.com) e YouTube
+    # - frame-ancestors: substitui X-Frame-Options, protege contra clickjacking
+    # - connect-src: permite conexões com Firebase, Google Auth e Backblaze
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.firebaseapp.com https://*.firebaseio.com https://www.gstatic.com https://apis.google.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.youtube.com https://s.ytimg.com https://unpkg.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https://firebasestorage.googleapis.com https://upload.wikimedia.org https://*.googleusercontent.com https://lh3.googleusercontent.com; connect-src 'self' wss://*.firebaseio.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://*.googleapis.com https://www.gstatic.com https://firebasestorage.googleapis.com https://www.google-analytics.com https://*.backblazeb2.com https://accounts.google.com; media-src 'self' blob: https://*.backblazeb2.com https://firebasestorage.googleapis.com https://media.unodev.com.br; frame-src 'self' https://www.youtube.com https://youtube.com https://accounts.google.com https://*.google.com https://karaoke-party-online.firebaseapp.com https://*.firebaseapp.com; frame-ancestors 'self';"
+</IfModule>

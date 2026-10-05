@@ -1,0 +1,128 @@
+{
+  "rules": {
+    ".read": "auth != null && auth.token.email === 'douglasdrm@gmail.com'",
+    ".write": "auth != null && auth.token.email === 'douglasdrm@gmail.com'",
+    "config": {
+      ".read": "true",
+      ".write": "auth != null && auth.token.email === 'douglasdrm@gmail.com'"
+    },
+    "catalog_chunks": {
+      ".read": "true",
+      ".write": "auth != null && auth.token.email === 'douglasdrm@gmail.com'"
+    },
+    "feedback": {
+      ".read": "auth != null && auth.token.email === 'douglasdrm@gmail.com'",
+      ".write": "auth != null"
+    },
+    "salas": {
+      ".read": "false",
+      ".write": "false",
+      "$room_id": {
+        ".read": "auth != null",
+        ".write": "auth != null && root.child('users').child(auth.uid).child('isBanned').val() !== true && ((!data.child('info/hostId').exists() && newData.child('info/hostId').val() === auth.uid) || data.child('info/hostId').val() === auth.uid)",
+        ".validate": "(auth != null && auth.token.email === 'douglasdrm@gmail.com') || (newData.child('info/hostId').isString() && (!data.child('info/hostId').exists() || newData.child('info/hostId').val() === data.child('info/hostId').val()))",
+        "active_users": {
+          "$uid": {
+            ".write": "auth != null && root.child('users').child(auth.uid).child('isBanned').val() !== true && auth.uid === $uid && root.child('salas').child($room_id).child('info/hostId').exists()"
+          }
+        },
+        "pedidos": {
+          "$request_id": {
+            ".write": "auth != null && root.child('users').child(auth.uid).child('isBanned').val() !== true && root.child('salas').child($room_id).child('info/hostId').exists() && root.child('salas').child($room_id).child('active_users').child(auth.uid).exists() && !data.exists() && newData.hasChildren(['id','singer','singerUid','processed','timestamp']) && newData.child('singerUid').val() === auth.uid && newData.child('singer').isString() && newData.child('processed').val() === false && newData.child('timestamp').isNumber()"
+          }
+        },
+        "now_playing": {
+          "votes": {
+            "$uid": {
+              ".write": "auth != null && root.child('users').child(auth.uid).child('isBanned').val() !== true && root.child('salas').child($room_id).child('info/hostId').exists() && root.child('salas').child($room_id).child('active_users').child(auth.uid).exists() && auth.uid === $uid && newData.hasChildren(['stars','timestamp']) && newData.child('stars').isNumber() && newData.child('stars').val() >= 1 && newData.child('stars').val() <= 5 && newData.child('timestamp').isNumber()"
+            }
+          },
+          "dedometro": {
+            "$uid": {
+              ".write": "auth != null && root.child('users').child(auth.uid).child('isBanned').val() !== true && root.child('salas').child($room_id).child('info/hostId').exists() && root.child('salas').child($room_id).child('active_users').child(auth.uid).exists() && auth.uid === $uid && newData.hasChildren(['type','timestamp']) && (newData.child('type').val() === 'like' || newData.child('type').val() === 'dislike') && newData.child('timestamp').isNumber()"
+            }
+          }
+        },
+        "reactions": {
+          ".indexOn": [
+            "timestamp"
+          ],
+          "$reaction_id": {
+            ".write": "auth != null && root.child('users').child(auth.uid).child('isBanned').val() !== true && root.child('salas').child($room_id).child('info/hostId').exists() && root.child('salas').child($room_id).child('active_users').child(auth.uid).exists() && !data.exists() && newData.child('senderUid').val() === auth.uid && newData.child('timestamp').isNumber() && ((newData.child('type').val() === 'message' && newData.child('text').isString()) || newData.child('emoji').isString())"
+          }
+        }
+      }
+    },
+    "users": {
+      ".read": "auth != null && auth.token.email === 'douglasdrm@gmail.com'",
+      ".write": "auth != null && auth.token.email === 'douglasdrm@gmail.com'",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "name": {
+          ".write": "auth != null && auth.uid === $uid"
+        },
+        "email": {
+          ".write": "auth != null && auth.uid === $uid"
+        },
+        "photo": {
+          ".write": "auth != null && auth.uid === $uid"
+        },
+        "customName": {
+          ".write": "auth != null && auth.uid === $uid"
+        },
+        "customPhoto": {
+          ".write": "auth != null && auth.uid === $uid"
+        },
+        "whatsapp": {
+          ".write": "auth != null && auth.uid === $uid"
+        },
+        "lastLogin": {
+          ".write": "auth != null && auth.uid === $uid"
+        },
+        "isHost": {
+          ".write": "auth != null && auth.uid === $uid"
+        },
+        "favorites": {
+          ".write": "auth != null && auth.uid === $uid"
+        },
+        "history": {
+          ".write": "auth != null && auth.uid === $uid"
+        },
+        "scoreCardBg": {
+          ".write": "auth != null && auth.uid === $uid"
+        },
+        "djName": {
+          ".write": "auth != null && auth.uid === $uid"
+        },
+        "logoBase64": {
+          ".write": "auth != null && auth.uid === $uid"
+        },
+        "stats": {
+          ".write": "auth != null && auth.uid === $uid"
+        },
+        "subscription": {
+          ".write": "auth != null && auth.uid === $uid && !data.exists() && newData.exists() && newData.child('active').val() === false && newData.child('status').val() === 'trial' && newData.child('plan').val() === 'Free Trial'",
+          ".validate": "(auth != null && auth.token.email === 'douglasdrm@gmail.com') || newData.hasChildren(['active','status','plan','requestDate'])",
+          "active": {
+            ".validate": "(auth != null && auth.token.email === 'douglasdrm@gmail.com') || newData.val() === false"
+          },
+          "status": {
+            ".validate": "(auth != null && auth.token.email === 'douglasdrm@gmail.com') || newData.val() === 'trial'"
+          },
+          "plan": {
+            ".validate": "(auth != null && auth.token.email === 'douglasdrm@gmail.com') || newData.val() === 'Free Trial'"
+          },
+          "requestDate": {
+            ".validate": "(auth != null && auth.token.email === 'douglasdrm@gmail.com') || newData.isNumber()"
+          },
+          "$other": {
+            ".validate": "auth != null && auth.token.email === 'douglasdrm@gmail.com'"
+          }
+        },
+        "trialUsedMs": {
+          ".write": "auth != null && auth.uid === $uid && newData.isNumber() && newData.val() >= 0 && (!data.exists() || newData.val() >= data.val())"
+        }
+      }
+    }
+  }
+}

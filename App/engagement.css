@@ -1,0 +1,300 @@
+
+/* ─── Engagement & Vibe UI (v22) ─── */
+
+.main-player.panel {
+    position: relative !important;
+}
+
+#reactionContainer {
+    position: absolute; /* Agora dentro do playerContainer */
+    inset: 0;
+    pointer-events: none;
+    z-index: 10000; 
+    overflow: hidden;
+}
+
+.floating-emoji {
+    position: absolute;
+    bottom: -50px;
+    font-size: 4rem; /* Maior */
+    animation: emojiFloat 4s ease-in forwards;
+    filter: drop-shadow(0 0 15px rgba(255,255,255,0.6));
+    opacity: 0;
+}
+
+@keyframes emojiFloat {
+    0% {
+        transform: translateY(0) translateX(0) scale(0.5);
+        opacity: 0;
+    }
+    15% {
+        opacity: 1;
+        transform: translateY(-100px) translateX(var(--random-x, 0)) scale(1.5);
+    }
+    85% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100vh) translateX(var(--random-x-end, 0)) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* TV Vibe Display - Discreto mas Visível */
+.public-score-display {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    width: 240px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    border-radius: 20px;
+    border: 1px solid var(--accent-primary);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    z-index: 1500;
+}
+
+.vibe-label {
+    font-size: 0.8rem !important;
+    font-weight: 900 !important;
+    color: rgba(255,255,255,0.7) !important;
+    letter-spacing: 1px !important;
+}
+
+.vibe-value {
+    font-size: 1.6rem !important;
+    font-weight: 900 !important;
+    text-shadow: 0 0 20px var(--accent-primary) !important;
+}
+
+/* Suspense Button */
+.btn-skip-score {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.5);
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: 0.3s;
+    z-index: 1100;
+    pointer-events: auto !important; /* Força ser clicável */
+}
+.btn-skip-score:hover {
+    background: var(--accent-primary);
+    color: white;
+    border-color: white;
+}
+
+/* Aplausos Animation */
+.applause-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 10001;
+}
+
+.clapping-emoji {
+    font-size: 10rem;
+    animation: clapShake 0.5s infinite alternate;
+}
+
+@keyframes clapShake {
+    from { transform: rotate(-15deg) scale(1); }
+    to { transform: rotate(15deg) scale(1.4); }
+}
+
+/* ─── Speech Bubble / Chat Flutuante na Tela ─── */
+.floating-message-bubble {
+    position: absolute;
+    bottom: -80px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(10, 10, 15, 0.9);
+    backdrop-filter: blur(12px);
+    border: 1.5px solid var(--accent-primary);
+    border-radius: 20px 20px 20px 5px;
+    padding: 16px 24px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(217, 70, 239, 0.3);
+    max-width: 460px;
+    z-index: 10005;
+    animation: messageFloat 6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    pointer-events: none;
+}
+
+.msg-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent-primary);
+    flex-shrink: 0;
+}
+
+.msg-avatar-initials {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-primary), #a020f0);
+    color: white;
+    font-weight: 800;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--accent-primary);
+    flex-shrink: 0;
+}
+
+.msg-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.msg-sender {
+    font-size: 0.9rem;
+    font-weight: 900;
+    color: var(--accent-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.msg-text {
+    font-size: 1.2rem;
+    color: white;
+    margin: 3px 0 0 0;
+    line-height: 1.35;
+    word-break: break-word;
+    font-weight: 500;
+}
+
+@keyframes messageFloat {
+    0% {
+        transform: translateY(0) scale(0.6);
+        opacity: 0;
+    }
+    8% {
+        opacity: 1;
+        transform: translateY(-130px) scale(1.05);
+    }
+    12% {
+        transform: translateY(-120px) scale(1);
+    }
+    85% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-85vh) scale(0.95);
+        opacity: 0;
+    }
+}
+
+/* ─── Leaderboard / Ranking da Noite ─── */
+.ranking-board {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 580px;
+    background: rgba(10, 10, 15, 0.95) !important;
+    backdrop-filter: blur(25px) !important;
+    border: 2px solid rgba(217, 70, 239, 0.4) !important;
+    border-radius: 24px !important;
+    padding: 35px !important;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 50px rgba(217, 70, 239, 0.2) !important;
+    font-family: 'Poppins', sans-serif !important;
+    color: white !important;
+    text-align: center !important;
+    z-index: 1500 !important;
+    animation: rankBoardIntro 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+}
+
+@keyframes rankBoardIntro {
+    0% { transform: translate(-50%, -40%) scale(0.85); opacity: 0; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+.ranking-title {
+    font-size: 2.2rem !important;
+    font-weight: 900 !important;
+    margin-bottom: 25px !important;
+    letter-spacing: 2px !important;
+    background: linear-gradient(135deg, #ffd700, #ff0080) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    text-transform: uppercase !important;
+    line-height: 1.2 !important;
+}
+
+.ranking-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+}
+
+.ranking-item {
+    display: flex !important;
+    align-items: center !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 16px !important;
+    padding: 12px 20px !important;
+    transition: 0.3s !important;
+}
+
+.ranking-item:hover {
+    background: rgba(217, 70, 239, 0.1) !important;
+    border-color: rgba(217, 70, 239, 0.4) !important;
+    transform: scale(1.02) !important;
+}
+
+.rank-pos {
+    font-size: 1.4rem !important;
+    font-weight: 900 !important;
+    width: 45px !important;
+    text-align: left !important;
+}
+
+.ranking-item:nth-child(1) .rank-pos { color: #ffd700 !important; font-size: 1.7rem !important; }
+.ranking-item:nth-child(2) .rank-pos { color: #c0c0c0 !important; }
+.ranking-item:nth-child(3) .rank-pos { color: #cd7f32 !important; }
+
+.rank-singer {
+    flex: 1 !important;
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    text-transform: uppercase !important;
+}
+
+.rank-score {
+    font-size: 1.5rem !important;
+    font-weight: 900 !important;
+    color: #00ff80 !important;
+    background: rgba(0, 255, 128, 0.15) !important;
+    padding: 4px 14px !important;
+    border-radius: 12px !important;
+}
+
+/* ─── Ambient Video Styling for Leaderboard ─── */
+.ranking-board.is-ambient {
+    opacity: 0.75 !important;
+    transform: translate(-50%, -40%) scale(0.85) !important;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6) !important;
+    border-color: rgba(217, 70, 239, 0.2) !important;
+    background: rgba(10, 10, 15, 0.85) !important;
+    pointer-events: none !important;
+}

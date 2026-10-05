@@ -1,0 +1,2901 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9CFQJSJJDS"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-9CFQJSJJDS');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>KARAOKE PARTY | Songbook</title>
+
+    <!-- PWA & Mobile Icons -->
+    <link rel="manifest" href="../manifest.json">
+    <link rel="icon" type="image/png" href="../Assets/icon-192.png">
+    <link rel="apple-touch-icon" href="../Assets/icon-192.png">
+    <meta name="theme-color" content="#d946ef">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../Assets/icon.png">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="mobile.css?v=12">
+
+    <!-- Driver.js Tour -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css" />
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-storage-compat.js"></script>
+
+    <!-- QR Code Scanner Library (com fallback silencioso se bloqueado) -->
+    <script>
+        // Carrega html5-qrcode dinamicamente para não travar a página se bloqueado
+        (function () {
+            var s = document.createElement('script');
+            s.src = 'https://unpkg.com/html5-qrcode';
+            s.onerror = function () {
+                console.warn('⚠️ html5-qrcode não pôde ser carregado. Scanner QR desativado.');
+                window.Html5Qrcode = null; // Marca como indisponível
+            };
+            document.head.appendChild(s);
+        })();
+    </script>
+    <script src="singer-selection.js?v=2"></script>
+    <script src="tone-control.js?v=1"></script>
+    <link rel="stylesheet" href="challenges.css?v=1">
+    <script src="social-core.js?v=1"></script>
+    <script src="party-social.js?v=4"></script>
+    <script src="challenge-core.js?v=1"></script>
+    <script src="challenges.js?v=3"></script>
+<link rel="stylesheet" href="party-social.css?v=4">
+</head>
+
+<body class="mobile-body">
+
+    <!-- ══════════════════════════════════
+         WHATSAPP LEAD MODAL (NOVO)
+    ══════════════════════════════════ -->
+    <div id="whatsappOverlay" class="mobile-modal-overlay" style="display:none; z-index:11000;">
+        <div class="mobile-modal">
+            <h3>📱 SÓ MAIS UM PASSO!</h3>
+            <p>Para sua segurança e acesso ao catálogo, confirme seu WhatsApp (com DDD):</p>
+            <input type="tel" id="userWhatsapp" placeholder="(00) 00000-0000" maxlength="15"
+                oninput="handlePhoneInput(this)" class="mobile-input">
+            <div class="modal-buttons" style="margin-top:10px;">
+                <button id="btnSaveWhatsapp" class="btn-confirm" onclick="saveWhatsapp()" disabled style="opacity:0.5;">
+                    CONFIRMAR E CURTIR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay de Banimento -->
+    <div id="bannedOverlay" class="mobile-modal-overlay"
+        style="display:none; z-index:12000; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.95);">
+        <i class="fas fa-user-slash" style="font-size:3.5rem; color:#ff4444; margin-bottom:20px;"></i>
+        <h2>CONTA SUSPENSA</h2>
+        <p style="text-align:center; padding:0 20px;">Esta conta foi desativada por violação dos nossos termos de uso e
+            segurança.</p>
+        <button class="btn-confirm" onclick="firebase.auth().signOut()" style="background:#444; margin-top:20px;">SAIR
+            DA CONTA</button>
+    </div>
+
+
+    <!-- ══════════════════════════════════
+         AUTH OVERLAY — tela de login
+    ══════════════════════════════════ -->
+    <div id="authOverlay">
+        <div class="auth-content-scroll"
+            style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+            <img src="../Assets/logo.png" alt="Karaoke Party" class="auth-logo">
+            <h2>KARAOKE PARTY</h2>
+            <p>Escolha como deseja entrar para pedir<br>suas músicas e curtir a festa!</p>
+
+            <!-- Social Buttons -->
+            <button class="btn-google" id="btnLoginGoogle">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="G">
+                Entrar com Google
+            </button>
+
+
+            <div class="auth-separator">
+                <span>ou use e-mail</span>
+            </div>
+
+            <!-- Email Form -->
+            <div class="auth-form" id="authForm">
+                <div class="auth-input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="authEmail" placeholder="Seu e-mail">
+                </div>
+                <div class="auth-input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="authPassword" placeholder="Sua senha">
+                </div>
+                <div class="auth-forgot" id="authForgot" onclick="forgotPassword()">Esqueci minha senha</div>
+                <button class="btn-auth-submit" id="btnAuthSubmit" onclick="handleEmailAuth()">ENTRAR AGORA</button>
+            </div>
+
+            <div class="auth-switch" id="authSwitch">
+                Não tem conta? <span onclick="toggleAuthMode()">Criar uma conta gratuita</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         BARRA DE USUÁRIO (após login)
+    ══════════════════════════════════ -->
+    <div id="userProfile" style="display:none;">
+        <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:0;">
+            <img id="headerUserPic" src="" alt="foto" width="32" height="32" onclick="openPhotoEditModal()"
+                title="Clique para editar perfil"
+                style="width:32px;height:32px;min-width:32px;max-width:32px;border-radius:50%;object-fit:cover;cursor:pointer;border:2px solid var(--accent);">
+            <div style="display:flex; flex-direction:column; min-width:0;">
+                <span id="headerUserName" onclick="openPhotoEditModal()" title="Clique para editar seu nome"
+                    style="cursor:pointer; font-weight:700; font-size:0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></span>
+                <div id="roomInfoSmall"
+                    style="display:flex; align-items:center; gap:5px; font-size:0.65rem; opacity:0.8;">
+                    <span id="statusIndicator" class="status-dot"
+                        style="width:7px; height:7px; border-radius:50%; background:#ffaa00; display:inline-block;"></span>
+                    <span id="statusRoomText">Conectando...</span>
+                </div>
+            </div>
+        </div>
+        <button class="btn-logout" onclick="firebase.auth().signOut()">SAIR</button>
+    </div>
+
+    <!-- ══════════════════════════════════
+         MODAL: EDITAR FOTO DE PERFIL
+    ══════════════════════════════════ -->
+    <div id="photoEditModal" class="mobile-modal-overlay" style="display:none; z-index:10500;">
+        <div class="mobile-modal photo-edit-modal">
+            <h3>✏️ SEU PERFIL</h3>
+
+            <!-- Foto -->
+            <div class="photo-preview-wrap">
+                <img id="photoPreviewCurrent" src="" alt="Prévia" class="photo-preview-avatar">
+                <div id="photoPreviewInitials" class="photo-preview-initials"></div>
+            </div>
+            <p style="font-size:0.72rem;opacity:0.45;margin:0 0 10px;text-align:center;letter-spacing:0.5px;">FOTO DE
+                PERFIL</p>
+            <div class="photo-edit-options">
+                <label class="photo-option-btn" for="photoFileInput">
+                    <i class="fas fa-image"></i>
+                    <span>Da Galeria</span>
+                </label>
+                <label class="photo-option-btn" for="photoCameraInput">
+                    <i class="fas fa-camera"></i>
+                    <span>Tirar Foto</span>
+                </label>
+                <button class="photo-option-btn" onclick="useGooglePhoto()">
+                    <i class="fab fa-google"></i>
+                    <span>Foto Google</span>
+                </button>
+            </div>
+            <input type="file" id="photoFileInput" accept="image/*" style="display:none;"
+                onchange="handlePhotoFile(this)">
+            <input type="file" id="photoCameraInput" accept="image/*" capture="user" style="display:none;"
+                onchange="handlePhotoFile(this)">
+            <div id="photoUploadStatus"
+                style="font-size:0.8rem;color:#00f2ff;text-align:center;min-height:1.2em;margin-top:8px;"></div>
+
+            <!-- Divisor -->
+            <div style="border-top:1px solid rgba(255,255,255,0.08);margin:18px 0 14px;"></div>
+
+            <!-- Nome -->
+            <p style="font-size:0.72rem;opacity:0.45;margin:0 0 8px;text-align:center;letter-spacing:0.5px;">SEU NOME NO
+                KARAOKÊ</p>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <input type="text" id="displayNameInput" placeholder="Como quer ser chamado?" maxlength="30" style="flex:1;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,0.06);
+                           border:1px solid rgba(217,70,239,0.35);color:white;font-size:0.9rem;
+                           font-family:'Poppins',sans-serif;outline:none;">
+                <button onclick="saveDisplayName()" style="padding:12px 16px;border-radius:12px;background:linear-gradient(135deg,#d946ef,#a020f0);
+                           border:none;color:white;font-weight:700;font-size:0.8rem;cursor:pointer;
+                           letter-spacing:0.5px;white-space:nowrap;">
+                    <i class="fas fa-check"></i> SALVAR
+                </button>
+            </div>
+            <div id="nameChangeStatus"
+                style="font-size:0.78rem;color:#00f2ff;text-align:center;min-height:1.2em;margin-top:6px;"></div>
+
+            <button class="btn-modal-close" onclick="closePhotoEditModal()" style="margin-top:14px;">FECHAR</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         MODAL: SCORE CARD COMPARTILHÁVEL
+    ══════════════════════════════════ -->
+    <div id="scoreCardModal" class="mobile-modal-overlay" style="display:none; z-index:10600;">
+        <div class="score-card-modal-inner">
+            <div class="score-card-header">
+                <span>🎤 SUA PERFORMANCE!</span>
+                <button onclick="closeScoreCard()"
+                    style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;font-size:1.4rem;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0;">×</button>
+            </div>
+            <canvas id="scoreCardCanvas" style="width:100%;border-radius:16px;display:block;"></canvas>
+            <div class="score-card-actions">
+                <button class="btn-share-card" onclick="shareScoreCard()">
+                    <i class="fas fa-share-alt"></i> COMPARTILHAR
+                </button>
+                <button class="btn-download-card" onclick="downloadScoreCard()">
+                    <i class="fas fa-download"></i> SALVAR
+                </button>
+            </div>
+            <button id="btnChangeBg" onclick="openBgPicker()"
+                style="width:100%;margin-top:10px;padding:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:12px;font-size:0.82rem;font-weight:700;letter-spacing:1px;cursor:pointer;">
+                <i class="fas fa-image"></i> TROCAR FOTO DE FUNDO
+            </button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         MODAL: SELETOR DE FUNDO DO CARD
+    ══════════════════════════════════ -->
+    <div id="bgPickerModal" class="mobile-modal-overlay" style="display:none; z-index:10700;">
+        <div class="mobile-modal" style="max-width:380px;">
+            <h3 style="margin-bottom:6px;">🖼️ FOTO DE FUNDO</h3>
+            <p style="font-size:0.78rem;opacity:0.5;margin-bottom:18px;">Escolha o fundo do seu card:</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+                <button class="bg-option-btn" id="bgOptMale" onclick="selectBgOption('male')">
+                    <span style="font-size:2rem;">🧍</span>
+                    <span>Silhueta<br>Masculina</span>
+                </button>
+                <button class="bg-option-btn" id="bgOptFemale" onclick="selectBgOption('female')">
+                    <span style="font-size:2rem;">🧍‍♀️</span>
+                    <span>Silhueta<br>Feminina</span>
+                </button>
+                <label class="bg-option-btn" for="bgCameraInput">
+                    <span style="font-size:2rem;">📸</span>
+                    <span>Tirar<br>Foto</span>
+                </label>
+                <label class="bg-option-btn" for="bgGalleryInput">
+                    <span style="font-size:2rem;">🖼️</span>
+                    <span>Da<br>Galeria</span>
+                </label>
+            </div>
+            <input type="file" id="bgCameraInput" accept="image/*" capture="environment" style="display:none;"
+                onchange="handleBgFile(this)">
+            <input type="file" id="bgGalleryInput" accept="image/*" style="display:none;" onchange="handleBgFile(this)">
+            <button class="btn-modal-close" onclick="closeBgPicker()">FECHAR</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         CONTEÚDO PRINCIPAL
+    ══════════════════════════════════ -->
+    <div class="main-content" id="mainContent">
+
+        <!-- Now Playing Bar + VOTAÇÃO (v9) -->
+        <div id="nowPlayingBar" class="now-playing-bar"
+            style="display:none; flex-direction:column; height:auto; padding:12px 15px;">
+            <div style="display:flex; align-items:center; width:100%; gap:12px; margin-bottom:10px;">
+                <div class="np-icon">🎤</div>
+                <div class="np-info" style="flex:1;">
+                    <div class="np-title" id="npTitle">—</div>
+                    <div class="np-singer" id="npSinger">—</div>
+                </div>
+            </div>
+            <!-- Estrelas de Votação Galera (v10) -->
+            <div class="voting-container" id="votingSection"
+                style="display:flex; flex-direction:column; align-items:center; gap:8px; border-top:1px solid rgba(255,255,255,0.08); padding-top:10px; width:100%;">
+                <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                    <span
+                        style="font-size:0.75rem; color:var(--accent); font-weight:900; letter-spacing:1px; text-transform:uppercase;">Vibe
+                        da Galera:</span>
+                    <span id="avgVoteDisplay"
+                        style="font-size:1.0rem; color:#fff; font-weight:900; background:rgba(217,70,239,0.25); padding:4px 10px; border-radius:10px;">⭐
+                        0.0</span>
+                </div>
+                <div class="stars-row" id="starsContainer" style="display:flex; gap:12px;">
+                    <button class="star-btn" data-value="1" onclick="sendVote(1)">⭐</button>
+                    <button class="star-btn" data-value="2" onclick="sendVote(2)">⭐</button>
+                    <button class="star-btn" data-value="3" onclick="sendVote(3)">⭐</button>
+                    <button class="star-btn" data-value="4" onclick="sendVote(4)">⭐</button>
+                    <button class="star-btn" data-value="5" onclick="sendVote(5)">⭐</button>
+                </div>
+            </div>
+
+            <!-- DEDÔMETRO (👍 vs 👎) (Novo!) -->
+            <div class="dedometro-row"
+                style="display:flex; justify-content:center; gap:20px; margin-top:10px; width:100%;">
+                <button class="dedo-btn like-btn" onclick="sendLikeDislike('like')"
+                    style="background:rgba(0,255,128,0.1); border:1px solid #00ff80; color:#00ff80; border-radius:15px; padding:6px 14px; font-size:0.9rem; display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; transition:0.2s; font-family:'Poppins',sans-serif;">
+                    👍 <span id="likeText">Aprovado</span>
+                </button>
+                <button class="dedo-btn dislike-btn" onclick="sendLikeDislike('dislike')"
+                    style="background:rgba(255,68,68,0.1); border:1px solid #ff4444; color:#ff4444; border-radius:15px; padding:6px 14px; font-size:0.9rem; display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; transition:0.2s; font-family:'Poppins',sans-serif;">
+                    👎 <span id="dislikeText">Zoeira</span>
+                </button>
+            </div>
+            <div id="voteFeedback"
+                style="display:none; font-size:0.55rem; color:#00f2ff; margin-top:5px; text-align:center; font-weight:bold;">
+                VOTO RECEBIDO! 🔥</div>
+
+            <!-- Reações em Tempo Real (v20) -->
+            <div class="reactions-row"
+                style="display:flex; justify-content:center; gap:18px; margin-top:12px; border-top:1px solid rgba(255,255,255,0.08); padding-top:12px; width:100%;">
+                <button class="reaction-btn" onclick="sendReaction('🎤')"
+                    style="background:none; border:none; font-size:1.6rem; cursor:pointer; transition:0.2s;"
+                    onmousedown="this.style.transform='scale(1.4)'"
+                    onmouseup="this.style.transform='scale(1)'">🎤</button>
+                <button class="reaction-btn" onclick="sendReaction('🔥')"
+                    style="background:none; border:none; font-size:1.6rem; cursor:pointer; transition:0.2s;"
+                    onmousedown="this.style.transform='scale(1.4)'"
+                    onmouseup="this.style.transform='scale(1)'">🔥</button>
+                <button class="reaction-btn" onclick="sendReaction('❤️')"
+                    style="background:none; border:none; font-size:1.6rem; cursor:pointer; transition:0.2s;"
+                    onmousedown="this.style.transform='scale(1.4)'"
+                    onmouseup="this.style.transform='scale(1)'">❤️</button>
+                <button class="reaction-btn" onclick="sendReaction('👏')"
+                    style="background:none; border:none; font-size:1.6rem; cursor:pointer; transition:0.2s;"
+                    onmousedown="this.style.transform='scale(1.4)'"
+                    onmouseup="this.style.transform='scale(1)'">👏</button>
+                <button class="reaction-btn" onclick="sendReaction('🤣')"
+                    style="background:none; border:none; font-size:1.6rem; cursor:pointer; transition:0.2s;"
+                    onmousedown="this.style.transform='scale(1.4)'"
+                    onmouseup="this.style.transform='scale(1)'">🤣</button>
+            </div>
+
+            <!-- CHAT / MENSAGENS NA TELA (Novo!) -->
+            <div class="message-row"
+                style="display:flex; gap:8px; margin-top:12px; border-top:1px solid rgba(255,255,255,0.08); padding-top:12px; width:100%; box-sizing:border-box;">
+                <input type="text" id="mobileMsgText" placeholder="Envie uma mensagem na tela... 💬" maxlength="80"
+                    style="flex:1; padding:8px 12px; border-radius:20px; background:rgba(255,255,255,0.06); border:1px solid rgba(217,70,239,0.3); color:white; font-size:0.8rem; outline:none; font-family:'Poppins',sans-serif;">
+                <button id="btnSendMobileMsg" onclick="sendTextMessage()"
+                    style="padding:8px 16px; border-radius:20px; background:linear-gradient(135deg,#d946ef,#a020f0); border:none; color:white; font-size:0.75rem; font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; flex-shrink:0;">ENVIAR</button>
+            </div>
+        </div>
+
+        <!-- Header da Sala -->
+        <header class="mobile-header">
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <div>
+                    <h1 id="welcomeTitle">KARAOKE PARTY</h1>
+                    <p id="roomHostName">🎙 Catálogo Oficial Premium</p>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button id="btnConnectRoom" onclick="showRoomFinderModal()"
+                        style="background:rgba(0, 242, 255, 0.1); border:1px solid #00f2ff; color:#00f2ff; padding: 0 12px; height:44px; border-radius:12px; font-weight:700; font-size:0.75rem; cursor:pointer;">
+                        CONECTAR <br> À SALA
+                    </button>
+                    <button id="btnHeaderQr" onclick="startQrScanner()"
+                        style="background:rgba(217,70,239,0.15); border:1px solid var(--accent); color:var(--accent); width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; cursor:pointer; box-shadow:0 5px 15px rgba(217,70,239,0.2);">
+                        <i class="fas fa-qrcode"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Search + Letra -->
+        <div class="search-container">
+            <input type="text" id="mobileSearch" placeholder="Cantar o que? 🎤" autocomplete="off">
+            <div id="alphaRulerContainer" style="display:none;">
+                <div class="alpha-ruler-track" id="alphaRuler">
+                    <!-- Letras injetadas via JS -->
+                </div>
+                <div class="alpha-ruler-focus"></div>
+            </div>
+        </div>
+
+        <!-- Botão shuffle flutuante -->
+        <button class="btn-shuffle-float" id="btnMobileShuffle" title="Música aleatória">
+            <i class="fas fa-random"></i>
+        </button>
+        <!-- Botão surpresa flutuante (Me Surpreende) (Novo!) -->
+        <button class="btn-surprise-float" id="btnMobileSurprise" onclick="requestSurpriseSong()"
+            title="Me Surpreende! 🎲"
+            style="position:fixed; bottom:140px; right:20px; width:50px; height:50px; border-radius:50%; background:linear-gradient(135deg, #00f2ff, #2d43d8); border:none; color:white; font-size:1.4rem; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(0,242,255,0.4); z-index:999; transition:0.3s;"
+            onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'">
+            🎲
+        </button>
+
+        <!-- Lista de músicas -->
+        <div id="mobileList">
+            <div style="text-align:center; padding: 50px 20px; opacity:0.4;">
+                Carregando catálogo...
+            </div>
+        </div>
+
+        <!-- Paginação -->
+        <div id="paginationBar"
+            style="display:none; align-items:center; justify-content:space-between; padding:12px 16px; gap:8px;">
+            <button id="btnPrevPage" class="btn-page" onclick="goPage(-1)">← Anterior</button>
+            <span id="pageIndicator"></span>
+            <button id="btnNextPage" class="btn-page" onclick="goPage(1)">Próxima →</button>
+        </div>
+
+        <!-- Feedback / Suporte (Aba) -->
+        <div id="mobileFeedback" style="display:none; padding-bottom:120px;">
+            <div style="display:flex; justify-content:center; align-items:center; padding: 15px 20px;">
+                <h2 class="queue-section-title" style="margin:0; font-size:1.1rem; color:var(--accent);"><i
+                        class="fas fa-headset"></i> SUPORTE E FEEDBACK</h2>
+            </div>
+
+            <div class="feedback-container">
+                <!-- Seção 1: Melhorias e Sugestões -->
+                <div class="feedback-card">
+                    <h3 class="feedback-card-title"><i class="fas fa-lightbulb"></i> Sugestões e Melhorias</h3>
+                    <p class="feedback-card-desc">Quer uma música que não está no app? Tem uma ideia legal? Mande pra
+                        gente!</p>
+                    <textarea id="suggestText" class="feedback-textarea"
+                        placeholder="Escreva sua sugestão ou pedido de música aqui..."></textarea>
+                    <button class="btn-feedback-submit" onclick="sendSuggestion()">ENVIAR SUGESTÃO</button>
+                </div>
+
+                <div style="margin-top:20px; text-align:center;">
+                    <button class="btn-feedback-submit"
+                        style="background: linear-gradient(135deg, #00f2ff, #2d43d8); font-size: 0.9rem;"
+                        onclick="startMobileTour(true)">
+                        <i class="fas fa-route"></i> REFAZER TUTORIAL APLICATIVO
+                    </button>
+                </div>
+
+                <!-- Seção 2: Reportar Defeito -->
+                <div class="feedback-card error-card" style="margin-top: 25px;">
+                    <h3 class="feedback-card-title error-title" style="color: #ff4757;"><i
+                            class="fas fa-exclamation-triangle"></i> Reportar Erro na Música</h3>
+                    <p class="feedback-card-desc">A música está com som ruim, sem voz guia ou com a legenda fora do
+                        tempo?</p>
+
+                    <input type="text" id="reportSongName" class="feedback-input" placeholder="Nome ou Código da Música"
+                        autocomplete="off">
+
+                    <select id="reportIssueType" class="feedback-select">
+                        <option value="" disabled selected>Selecione o problema...</option>
+                        <option value="Som ruim / Baixa qualidade">Som ruim / Baixa qualidade</option>
+                        <option value="Legenda fora de tempo">Legenda fora do tempo</option>
+                        <option value="Somente toque, sem guias">Somente toque, sem guias</option>
+                        <option value="Música errada">Música errada (não bate o som com a letra)</option>
+                        <option value="Outro problema">Outro problema (descreva abaixo)</option>
+                    </select>
+
+                    <textarea id="reportDetails" class="feedback-textarea-small"
+                        placeholder="Detalhes adicionais (opcional)..."></textarea>
+
+                    <button class="btn-feedback-report" onclick="sendReport()">ENVIAR AVISO</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════
+         BOTTOM NAVIGATION
+    ══════════════════════════════════ -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('catalog', this)">
+            <i class="fas fa-music"></i>
+            <span>Músicas</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('favorites', this)">
+            <i class="fas fa-star"></i>
+            <span>Favoritos</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('history', this)">
+            <i class="fas fa-fire"></i>
+            <span>Meus Hits</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('feedback', this)">
+            <i class="fas fa-headset"></i>
+            <span>Suporte</span>
+        </button>
+    </nav>
+
+    <!-- ══════════════════════════════════
+         MODAL — nome do cantor
+    ══════════════════════════════════ -->
+    <div id="nameModalOverlay" class="mobile-modal-overlay">
+        <div class="mobile-modal">
+            <h3>Quem vai cantar? 🎤</h3>
+            <p>Selecione uma ou mais pessoas. Desmarque seu nome se você não for cantar.</p>
+            <div class="active-users-list" id="activeUsersChips"></div>
+            <input type="text" id="modalSingerName" placeholder="Nome do cantor..." autocomplete="off">
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeNameModal()">Cancelar</button>
+                <button class="btn-confirm" onclick="confirmNameModal()">PEDIR! 🎵</button>
+                <button class="challenge-btn" onclick="const chosen = pendingRequest; closeNameModal(); ChallengeMobile.compose(chosen)">🔥 DESAFIAR A GALERA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         MODAL — música surpresa
+    ══════════════════════════════════ -->
+    <div id="surpriseModalOverlay" class="mobile-modal-overlay">
+        <div class="mobile-modal"
+            style="border-color: rgba(0, 242, 255, 0.4); box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 40px rgba(0, 242, 255, 0.15);">
+            <h3
+                style="background: linear-gradient(90deg, #fff, var(--blue, #00f2ff)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                Música Surpresa! 🎲</h3>
+            <p>O sistema escolheu de surpresa para você:</p>
+
+            <div id="surpriseSongBox"
+                style="margin: 20px 0; padding: 18px; background: rgba(255,255,255,0.04); border: 1.5px solid rgba(0, 242, 255, 0.3); border-radius: 20px; box-shadow: inset 0 0 15px rgba(0, 242, 255, 0.1); text-align: left; position: relative; overflow: hidden;">
+                <div
+                    style="position: absolute; right: -10px; bottom: -10px; font-size: 4.5rem; opacity: 0.05; pointer-events: none; transform: rotate(15deg);">
+                    🎲</div>
+                <div id="surpriseSongTitle"
+                    style="font-size: 1.12rem; font-weight: 800; color: white; line-height: 1.35; font-family: 'Montserrat', sans-serif;">
+                    "Music Title"</div>
+                <div id="surpriseSongArtist"
+                    style="font-size: 0.9rem; color: var(--blue, #00f2ff); font-weight: 700; margin-top: 6px; font-family: 'Poppins', sans-serif;">
+                    Artist Name</div>
+                <div id="surpriseSongSource"
+                    style="font-size: 0.72rem; color: rgba(255,255,255,0.4); font-style: italic; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
+                    (Baseado em seus favoritos)</div>
+            </div>
+
+            <p style="margin-bottom: 22px;">Quer mandar essa música pro palco?</p>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeSurpriseModal()">Cancelar</button>
+                <button class="btn-confirm"
+                    style="background: linear-gradient(135deg, var(--blue, #00f2ff), var(--purple, #a020f0)); box-shadow: 0 5px 20px rgba(0, 242, 255, 0.25);"
+                    onclick="confirmSurpriseModal()">BORA! 🎤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- notificação de fila / sua vez -->
+    <div class="queue-indicator" id="queueMsg">FOI PRA FILA! 🎤</div>
+
+    <!-- Overlay "Prepara o Gogó" -->
+    <div id="voiceAlert" class="voice-alert-overlay" onclick="closeVoiceAlert()">
+        <div class="va-content">
+            <div class="va-mic-icon">🎤</div>
+            <div class="va-text">PREPARA O GOGÓ!</div>
+            <div class="va-subtext">Você é o próximo na fila:</div>
+            <div id="vaSongTitle" class="va-song-title">Music Title</div>
+            <div id="vaSongArtist" class="va-song-artist">Artist Name</div>
+            <button class="btn-va-close">ENTENDI!</button>
+        </div>
+    </div>
+
+    <script>
+        // ════════════════════════════════
+        // FIREBASE CONFIG
+        // ════════════════════════════════
+        const firebaseConfig = {
+            apiKey: "AIzaSyCnZ8hoE3NGNx2t490Yw12AxlCqVjSguig",
+            authDomain: "karaoke-party-online.firebaseapp.com",
+            databaseURL: "https://karaoke-party-online-default-rtdb.firebaseio.com",
+            projectId: "karaoke-party-online",
+            storageBucket: "karaoke-party-online.firebasestorage.app",
+            messagingSenderId: "1059879567957",
+            appId: "1:1059879567957:web:d4cb88563b39fe08934adc"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
+
+        // ════════════════════════════════
+        // VARIÁVEIS
+        // ════════════════════════════════
+        const urlParams = new URLSearchParams(window.location.search);
+        // Aceita 'room' ou 'sala'
+        let currentRoomCode = (urlParams.get('room') || urlParams.get('sala'))?.toUpperCase();
+
+        function updateStatusBar(connected = false) {
+            const dot = document.getElementById('statusIndicator');
+            const txt = document.getElementById('statusRoomText');
+            const roomInfo = document.getElementById('roomInfoSmall');
+
+            if (currentRoomCode) {
+                if (roomInfo) roomInfo.style.display = 'flex';
+                if (txt) txt.innerText = 'Sala: ' + currentRoomCode;
+                if (dot) {
+                    dot.style.background = connected ? '#00ff00' : '#ffaa00';
+                    dot.style.boxShadow = connected ? '0 0 8px #00ff00' : '0 0 8px #ffaa00';
+                }
+            } else {
+                if (roomInfo) roomInfo.style.display = 'none';
+            }
+        }
+        updateStatusBar(false);
+
+        let activeTab = 'catalog';
+        let pendingRequest = null;
+        let lastSongTitle = ""; // v10.1
+        let currentUser = null;
+
+        // Paginação e filtros do catálogo
+        let currentPage = 0;
+        const PAGE_SIZE = 50;
+        let activeSource = null;
+        let activeAlphaFilter = null;
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        // Inicialização de variáveis globais com persistência local
+        let catalog = [];
+        const ALPHA_LETTERS = ['#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+        let alphaValidLetters = [];
+        let alphaRulerDebounce = null;
+        let _lastPageDir = 1;
+        let favorites = JSON.parse(localStorage.getItem('karaoke_party_favorites') || '[]');
+        let userHistory = JSON.parse(localStorage.getItem('karaoke_party_history') || '{}');
+        let activeUsers = {};
+        // Se não tem sala, entra em modo explorador
+        if (!currentRoomCode) {
+            enterExplorerMode();
+        }
+
+        function showRoomFinderModal() {
+            showRoomFinder();
+        }
+
+        function showRoomFinder() {
+            // Esconde conteúdo principal
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('userProfile').style.display = 'none';
+
+            const finder = document.createElement('div');
+            finder.id = 'roomFinder';
+            finder.style.cssText = 'position:fixed;inset:0;background:#060612;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 20px;text-align:center;';
+            finder.innerHTML = `
+                <img src="../Assets/logo.png" style="width:90px;margin-bottom:18px;filter:drop-shadow(0 0 25px rgba(217,70,239,0.6));" alt="logo">
+                <h2 style="font-family:'Montserrat',sans-serif;font-size:1.4rem;font-weight:900;letter-spacing:3px;
+                           background:linear-gradient(90deg,#d946ef,#00f2ff);-webkit-background-clip:text;
+                           background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;">ENTRAR NA SALA</h2>
+                <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin-bottom:24px;line-height:1.5;">
+                    Digite o código ou busque pelo<br>nome da festa
+                </p>
+                <div style="width:100%;max-width:360px;">
+                    <input id="roomSearchInput" type="text" placeholder="Código ou nome da Festa..."
+                        autocomplete="off"
+                        style="width:100%;padding:14px 18px;border-radius:14px;
+                               background:rgba(255,255,255,0.06);border:2px solid rgba(0,242,255,0.25);
+                               color:white;font-size:1rem;font-family:'Poppins',sans-serif;
+                               outline:none;text-align:center;margin-bottom:12px;box-sizing:border-box;
+                               transition:border-color 0.3s;">
+                    <div id="roomSearchResults" style="margin-bottom:14px;max-height:220px;overflow-y:auto;"></div>
+                    <button id="btnEnterRoom" onclick="enterRoomFromFinder()"
+                        style="width:100%;height:50px;background:linear-gradient(135deg,#d946ef,#a020f0);
+                               border:none;color:white;border-radius:14px;font-size:1rem;font-weight:800;
+                               cursor:pointer;letter-spacing:1px;font-family:'Poppins',sans-serif;transition:0.2s;">
+                        ENTRAR ▶
+                    </button>
+                </div>`;
+            document.body.appendChild(finder);
+
+            const searchInput = document.getElementById('roomSearchInput');
+            const results = document.getElementById('roomSearchResults');
+
+            searchInput.addEventListener('focus', () => searchInput.style.borderColor = '#d946ef');
+            searchInput.addEventListener('blur', () => searchInput.style.borderColor = 'rgba(0,242,255,0.25)');
+
+            searchInput.addEventListener('input', () => {
+                const term = searchInput.value.trim().toUpperCase();
+                results.innerHTML = '';
+                if (term.length < 2) return;
+
+                db.ref('salas').once('value', snap => {
+                    const salas = snap.val() || {};
+                    let found = 0;
+                    Object.entries(salas).forEach(([code, sala]) => {
+                        if (!sala.info) return;
+                        const nameMatch = (sala.info.name || '').toUpperCase().includes(term);
+                        const codeMatch = code.includes(term);
+                        if (!nameMatch && !codeMatch) return;
+                        found++;
+
+                        const item = document.createElement('div');
+                        item.style.cssText = 'background:rgba(255,255,255,0.05);border:1px solid rgba(217,70,239,0.2);border-radius:12px;padding:11px 14px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:12px;text-align:left;transition:background 0.2s;';
+                        item.innerHTML = `
+                            ${sala.info.hostPhoto
+                                ? `<img src="${sala.info.hostPhoto}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid #d946ef;flex-shrink:0;" onerror="this.style.display='none'">`
+                                : `<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#d946ef,#a020f0);display:flex;align-items:center;justify-content:center;font-size:0.75rem;flex-shrink:0;">🎛️</div>`}
+                            <div style="min-width:0;">
+                                <div style="font-weight:700;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${sala.info.name || 'Festa'}</div>
+                                <div style="font-size:0.7rem;opacity:0.45;margin-top:2px;">DJ: ${sala.info.hostName || '—'} &nbsp;·&nbsp; <b>${code}</b></div>
+                            </div>`;
+                        item.onclick = () => {
+                            searchInput.value = code;
+                            results.innerHTML = '';
+                        };
+                        item.onmouseover = () => item.style.background = 'rgba(217,70,239,0.1)';
+                        item.onmouseout = () => item.style.background = 'rgba(255,255,255,0.05)';
+                        results.appendChild(item);
+                    });
+
+                    if (found === 0) {
+                        results.innerHTML = '<div style="opacity:0.35;font-size:0.78rem;padding:10px;">Nenhuma sala ativa encontrada.</div>';
+                    }
+                }).catch(e => {
+                    console.error("❌ Erro ao buscar lista de salas:", e);
+                    if (results) results.innerHTML = `<div style="color:#ff4444; font-size:0.8rem; padding:10px;">Erro de acesso ao banco. Tente novamente.</div>`;
+                });
+            });
+        }
+
+        function enterRoomFromFinder() {
+            const val = (document.getElementById('roomSearchInput')?.value || '').trim().toUpperCase();
+            if (!val || val.length < 5) { alert('Digite o código de 5 letras ou selecione uma sala da lista!'); return; }
+            window.location.search = 'room=' + val.slice(0, 5);
+        }
+
+        function closeRoomFinder() {
+            const finder = document.getElementById('roomFinder');
+            if (finder) finder.remove();
+        }
+
+        function enterExplorerMode() {
+            closeRoomFinder();
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('userProfile').style.display = 'flex';
+
+            // Adiciona um aviso visual discreto
+            const statusText = document.getElementById('statusRoomText');
+            if (statusText) statusText.innerText = "Modo Explorador";
+            const statusIndicator = document.getElementById('statusIndicator');
+            if (statusIndicator) {
+                statusIndicator.style.background = '#888';
+                statusIndicator.style.boxShadow = 'none';
+            }
+            const roomInfo = document.getElementById('roomInfoSmall');
+            if (roomInfo) roomInfo.style.display = 'flex';
+
+            // Esconde botão de conectar se já estiver em modo explorador no header
+            const btnConnect = document.getElementById('btnConnectRoom');
+            if (btnConnect) btnConnect.style.display = 'block';
+            const alphaRuler = document.getElementById('alphaRulerContainer');
+            if (alphaRuler) alphaRuler.style.display = 'block';
+        }
+
+        let html5QrCode = null;
+        function startQrScanner() {
+            // Verifica se a biblioteca foi carregada (pode estar bloqueada no Brave)
+            if (typeof Html5Qrcode === 'undefined' || Html5Qrcode === null) {
+                alert("Scanner QR não disponível neste navegador.\nUse o botão 'CONECTAR À SALA' e digite o código manualmente.");
+                return;
+            }
+
+            const btn = document.getElementById('btnHeaderQr');
+            const reader = document.getElementById('qr-reader');
+
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    html5QrCode = null;
+                    if (reader) reader.style.display = 'none';
+                    if (btn) btn.innerHTML = '<i class="fas fa-qrcode"></i>';
+                }).catch(() => { html5QrCode = null; });
+                return;
+            }
+
+            if (!reader) return;
+            if (btn) btn.innerHTML = '<i class="fas fa-times"></i>';
+            reader.style.display = 'block';
+
+            try {
+                html5QrCode = new Html5Qrcode("qr-reader");
+                const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+                html5QrCode.start({ facingMode: "environment" }, config, (decodedText) => {
+                    console.log("QR Lido:", decodedText);
+                    try {
+                        const url = new URL(decodedText);
+                        const room = url.searchParams.get('room') || url.searchParams.get('sala');
+                        if (room) {
+                            html5QrCode.stop();
+                            html5QrCode = null;
+                            window.location.search = 'room=' + room.toUpperCase();
+                        } else {
+                            alert("QR Code inválido ou sala não encontrada!");
+                        }
+                    } catch (e) {
+                        alert("Erro ao processar QR Code!");
+                    }
+                }).catch(err => {
+                    console.warn("Câmera negada ou erro:", err);
+                    alert("Não foi possível acessar a câmera.\nVerifique as permissões do navegador.");
+                    if (reader) reader.style.display = 'none';
+                    if (btn) btn.innerHTML = '<i class="fas fa-qrcode"></i>';
+                    html5QrCode = null;
+                });
+            } catch (e) {
+                console.error("Erro ao inicializar scanner:", e);
+                html5QrCode = null;
+                if (reader) reader.style.display = 'none';
+                if (btn) btn.innerHTML = '<i class="fas fa-qrcode"></i>';
+            }
+        }
+
+
+        // ════════════════════════════════
+        // AUTH STATE
+        // ════════════════════════════════
+        auth.onAuthStateChanged((user) => {
+            const overlay = document.getElementById('authOverlay');
+            const profile = document.getElementById('userProfile');
+            const content = document.getElementById('mainContent');
+
+            if (user) {
+                currentUser = user;
+
+                // Some o overlay suavemente
+                overlay.style.opacity = '0';
+                overlay.style.pointerEvents = 'none';
+                setTimeout(() => overlay.style.display = 'none', 450);
+
+                // Mostra barra de perfil
+                profile.style.display = 'flex';
+
+                const userDisplayName = user.displayName || (user.email ? user.email.split('@')[0] : 'Novo Cantor');
+
+                // CAPTURA DE LEAD inteligente e verificação de status unificada
+                db.ref(`users/${user.uid}`).once('value').then(snap => {
+                    const userData = snap.val() || {};
+
+                    if (userData.isBanned) {
+                        document.getElementById('bannedOverlay').style.display = 'flex';
+                        return;
+                    }
+
+                    // Mantém isHost atual se existir; senão cria como false
+                    const isHostVal = userData.isHost !== undefined ? userData.isHost : false;
+
+                    const updates = {
+                        name: userData.name || userDisplayName,
+                        email: userData.email || user.email || 'sem-email',
+                        photo: userData.photo || user.photoURL || '',
+                        lastLogin: firebase.database.ServerValue.TIMESTAMP,
+                        isHost: isHostVal
+                    };
+
+                    db.ref(`users/${user.uid}`).update(updates).then(() => {
+                        console.log("✅ Lead sincronizado com sucesso.");
+
+                        // Exibe modal de WhatsApp apenas para cantores comuns (Leads) sem WhatsApp cadastrado
+                        if (!isHostVal && !userData.whatsapp) {
+                            document.getElementById('whatsappOverlay').style.display = 'flex';
+                            document.getElementById('whatsappOverlay').style.opacity = '1';
+                        }
+                    }).catch(err => {
+                        console.error("❌ Erro ao salvar Lead:", err.code, err.message);
+                    });
+
+                    // 2. Nome de exibição na UI (usando customName do próprio snap)
+                    const customName = userData.customName || '';
+                    const displayFirst = (customName || userDisplayName).split(' ')[0];
+                    const headerEl = document.getElementById('headerUserName');
+                    if (headerEl) headerEl.innerText = displayFirst;
+
+                    if (currentRoomCode) {
+                        db.ref(`salas/${currentRoomCode}/active_users/${user.uid}/name`).set(displayFirst);
+                    }
+
+                    // 5. Registro de presença detalhado na sala
+                    if (currentRoomCode) {
+                        const myRef = db.ref(`salas/${currentRoomCode}/active_users/${user.uid}`);
+                        const nameForRoom = (userData.name || userDisplayName).split(' ')[0];
+                        myRef.set({
+                            uid: user.uid,
+                            name: nameForRoom,
+                            photo: user.photoURL || '',
+                            timestamp: firebase.database.ServerValue.TIMESTAMP
+                        });
+                    }
+                }).catch(err => {
+                    console.error("❌ Erro na consulta do usuário:", err);
+                });
+
+                loadUserAvatar(user);
+
+                // 4. Mostra conteúdo
+                content.style.display = 'block';
+                const alphaRuler = document.getElementById('alphaRulerContainer');
+                if (alphaRuler) alphaRuler.style.display = 'block';
+
+                // Expor uid para app.js via global (score card)
+                window.currentMobileUid = user.uid;
+
+                loadUserData();
+                // Se o catálogo não carregou no modo explorador, tenta agora usando a variável global 'catalog'
+                if (!window.catalog || window.catalog.length === 0) {
+                    console.log("🔄 Tentando carregar catálogo pós-login...");
+                    db.ref('config/catalog').once('value', () => { });
+                }
+
+                if (currentRoomCode) {
+                    console.log(`🔑 [v12] Usuário Autenticado: ${user.uid}`);
+                    initRealtimeListeners();
+                    listenForScoreCard();
+                }
+
+            } else {
+                currentUser = null;
+                window.currentMobileUid = null;
+                profile.style.display = 'none';
+
+                if (!currentRoomCode) {
+                    // MODO EXPLORADOR: mostra catálogo mas mantém banner de login
+                    // O overlay vira um banner menor no topo, não bloqueia o conteúdo
+                    overlay.style.display = 'none';
+                    content.style.display = 'block';
+                    const alphaRuler = document.getElementById('alphaRulerContainer');
+                    if (alphaRuler) alphaRuler.style.display = 'block';
+                    // Mostra botão "Conectar à Sala" para convidar login
+                    const btnConnect = document.getElementById('btnConnectRoom');
+                    if (btnConnect) btnConnect.style.display = 'block';
+                } else {
+                    // COM SALA: login obrigatório
+                    overlay.style.display = 'flex';
+                    overlay.style.opacity = '1';
+                    overlay.style.pointerEvents = '';
+                }
+            }
+        });
+
+        document.getElementById('btnLoginGoogle').addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            // Usar Popup por padrão (solicitado pelo usuário e mais confiável)
+            auth.signInWithPopup(provider).catch(err => {
+                console.error('❌ Erro Login Google:', err);
+                if (err.code === 'auth/popup-blocked') {
+                    alert('O login foi bloqueado pelo seu navegador. Por favor, permita pop-ups para este site.');
+                } else if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
+                    alert('Erro ao fazer login: ' + err.code + '\n' + err.message);
+                }
+            });
+        });
+
+        // Processar resultado de redirect (caso o popup seja bloqueado e o navegador use redirect)
+        auth.getRedirectResult().then(result => {
+            if (result && result.user) {
+                console.log('✅ Login por redirect bem-sucedido:', result.user.email);
+            }
+        }).catch(err => {
+            if (err.code && err.code !== 'auth/no-auth-event') {
+                console.warn('⚠️ Erro ao processar redirect:', err.code);
+            }
+        });
+
+
+        let isSignUpMode = false;
+        function toggleAuthMode() {
+            isSignUpMode = !isSignUpMode;
+            const btnSubmit = document.getElementById('btnAuthSubmit');
+            const switchArea = document.getElementById('authSwitch');
+
+            if (isSignUpMode) {
+                btnSubmit.innerText = "CRIAR CONTA";
+                switchArea.innerHTML = 'Já tem uma conta? <span onclick="toggleAuthMode()">Fazer Login</span>';
+            } else {
+                btnSubmit.innerText = "ENTRAR AGORA";
+                switchArea.innerHTML = 'Não tem conta? <span onclick="toggleAuthMode()">Criar uma conta gratuita</span>';
+            }
+        }
+
+        function handleEmailAuth() {
+            const email = document.getElementById('authEmail').value.trim();
+            const pass = document.getElementById('authPassword').value;
+
+            if (!email || !pass) { alert("Preencha e-mail e senha!"); return; }
+            if (pass.length < 6) { alert("A senha deve ter pelo menos 6 caracteres."); return; }
+
+            if (isSignUpMode) {
+                auth.createUserWithEmailAndPassword(email, pass)
+                    .catch(err => alert("Erro ao criar conta: " + err.message));
+            } else {
+                auth.signInWithEmailAndPassword(email, pass)
+                    .catch(err => alert("Erro ao entrar: " + err.message));
+            }
+        }
+
+        function forgotPassword() {
+            const email = document.getElementById('authEmail').value.trim();
+            if (!email) { alert("Digite seu e-mail não campo acima para receber o link de redefinição."); return; }
+
+            auth.sendPasswordResetEmail(email)
+                .then(() => alert("E-mail de redefinição enviado! Verifique sua caixa de entrada."))
+                .catch(err => alert("Erro ao enviar e-mail: " + err.message));
+        }
+
+        // ════════════════════════════════
+        // DADOS DO USUÁRIO (Firebase)
+        // ════════════════════════════════
+        function loadUserData() {
+            if (!currentUser) return;
+
+            db.ref(`users/${currentUser.uid}/favorites`).once('value', snap => {
+                const cloudFavs = snap.val() || [];
+                const localFavs = JSON.parse(localStorage.getItem('karaoke_party_favorites') || '[]');
+
+                // Merge com prioridade para o que estiver no localStorage ou Cloud
+                favorites = [...new Set([...cloudFavs, ...localFavs])];
+
+                // Sempre mantém o localStorage atualizado e tenta salvar na nuvem se logado
+                localStorage.setItem('karaoke_party_favorites', JSON.stringify(favorites));
+                db.ref(`users/${currentUser.uid}/favorites`).set(favorites);
+
+                renderPage(0);
+            });
+
+            db.ref(`users/${currentUser.uid}/history`).on('value', snap => {
+                userHistory = snap.val() || {};
+                if (activeTab === 'history') renderHistory();
+                else renderPage(0);
+            });
+        }
+
+        // ════════════════════════════════
+        // NAVEGAÇÃO ENTRE ABAS
+        // ════════════════════════════════
+        function switchTab(tab, el) {
+            activeTab = tab;
+
+            // UI Update
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+
+            // Sections update
+            const mobileList = document.getElementById('mobileList');
+            const mobileFeedback = document.getElementById('mobileFeedback');
+            const searchBox = document.querySelector('.search-container');
+
+            mobileList.style.display = (tab === 'feedback') ? 'none' : 'block';
+            if (mobileFeedback) {
+                mobileFeedback.style.display = (tab === 'feedback') ? 'block' : 'none';
+            }
+
+            const alphaRuler = document.getElementById('alphaRulerContainer');
+            const paginationBar = document.getElementById('paginationBar');
+
+            if (tab === 'catalog') {
+                searchBox.style.display = 'flex';
+                if (alphaRuler) alphaRuler.style.display = 'block';
+                renderPage(0);
+            } else if (tab === 'favorites') {
+                searchBox.style.display = 'none';
+                if (alphaRuler) alphaRuler.style.display = 'none';
+                if (paginationBar) paginationBar.style.display = 'none';
+                renderFavorites();
+            } else if (tab === 'history') {
+                searchBox.style.display = 'none';
+                if (alphaRuler) alphaRuler.style.display = 'none';
+                if (paginationBar) paginationBar.style.display = 'none';
+                renderHistory();
+            } else if (tab === 'feedback') {
+                searchBox.style.display = 'none';
+                if (alphaRuler) alphaRuler.style.display = 'none';
+                if (paginationBar) paginationBar.style.display = 'none';
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function renderFavorites() {
+            const favItems = catalog.filter(s => favorites.includes(s.id));
+            render(favItems);
+        }
+
+        function renderHistory() {
+            if (!userHistory) return render([]);
+
+            // Mapeia os IDs do histórico para objetos completos do catálogo
+            const historyArray = Object.keys(userHistory)
+                .map(id => {
+                    const song = catalog.find(s => s.id === id);
+                    if (!song) return null;
+                    return { ...song, count: userHistory[id].count };
+                })
+                .filter(s => s !== null)
+                .sort((a, b) => b.count - a.count);
+
+            render(historyArray);
+        }
+
+        // ════════════════════════════════
+        // LISTENERS EM TEMPO REAL
+        // ════════════════════════════════
+        function startActiveUsersListener() {
+            if (!currentRoomCode) return;
+            db.ref(`salas/${currentRoomCode}/active_users`).on('value', snap => {
+                activeUsers = snap.val() || {};
+                console.log("👥 Usuários ativos na sala:", Object.keys(activeUsers).length);
+            });
+        }
+
+        function initRealtimeListeners() {
+            console.log("📡 Iniciando Listeners para sala:", currentRoomCode);
+            if (!currentRoomCode) { console.error("❌ Erro: currentRoomCode nulo"); return; }
+
+            updateStatusBar(true);
+            startActiveUsersListener(); // Ativa sincronização de pessoas na sala
+
+            // Sincronização de Fila v13 (Protocolo JSON)
+            db.ref(`salas/${currentRoomCode}/queue_v13`).on('value', snap => {
+                let raw = snap.val();
+                let queue = [];
+
+                try {
+                    if (raw) {
+                        queue = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                    }
+                } catch (e) {
+                    console.error("❌ [v13] Erro ao processar JSON da fila:", e);
+                    queue = [];
+                }
+
+                console.log(`🎵 Fila Recebida v13 (${queue.length} músicas)`);
+
+                const badge = document.getElementById('queueCountBadge');
+                if (badge) {
+                    badge.innerText = queue.length;
+                    badge.style.display = queue.length > 0 ? 'inline-block' : 'none';
+                }
+
+                const queueContainer = document.getElementById('queueContent');
+                if (queue.length === 0) {
+                    if (queueContainer) {
+                        queueContainer.innerHTML = `
+                            <div style="text-align:center; padding:50px 20px; opacity:0.6;">
+                                <i class="fas fa-microphone-slash" style="font-size:3rem; margin-bottom:15px; color:var(--accent);"></i><br>
+                                <strong style="color:white; display:block; margin-bottom:5px;">FILA VAZIA</strong>
+                                <span style="font-size:0.8rem;">Seja o primeiro a cantar! Escolha uma música não catálogo.</span>
+                            </div>
+                        `;
+                    }
+                } else {
+                    renderQueueSync(queue);
+                }
+
+                checkProximityAlerts(queue);
+            });
+
+            // Nome do DJ na barra de status (v13)
+            db.ref(`salas/${currentRoomCode}/info`).on('value', snap => {
+                const info = snap.val();
+                const roomT = document.getElementById('statusRoomText');
+                if (info && roomT) {
+                    roomT.innerText = `${info.name.toUpperCase()} (${currentRoomCode})`;
+                }
+            });
+
+            // Tempo da música atual (Progresso)
+            db.ref(`salas/${currentRoomCode}/now_playing/time`).on('value', snap => {
+                currentProgress = snap.val() || { current: 0, total: 0 };
+            });
+
+            // Tocando Agora
+            db.ref(`salas/${currentRoomCode}/now_playing`).on('value', snap => {
+                const np = snap.val();
+                const bar = document.getElementById('now_playingBar'); // Corrigindo ID se necessário
+                const barAlt = document.getElementById('nowPlayingBar');
+                const targetBar = barAlt || bar;
+
+                if (np && np.playing) {
+                    if (targetBar) targetBar.style.display = 'flex';
+                    const titleEl = document.getElementById('npTitle');
+                    const singerEl = document.getElementById('npSinger');
+                    if (titleEl) titleEl.innerText = np.title || '—';
+                    if (singerEl) singerEl.innerText = `Cantando: ${np.singer || '—'}`;
+
+                    // Se mudou a música, resetamos as estrelas (v10.1)
+                    if (np.title !== lastSongTitle) {
+                        updateStarsUI(0);
+                        const avgDisplay = document.getElementById('avgVoteDisplay');
+                        if (avgDisplay) avgDisplay.innerText = '⭐ 0.0';
+                        lastSongTitle = np.title;
+                    }
+
+                    // Monitora votos em tempo real não Mobile (v10)
+                    db.ref(`salas/${currentRoomCode}/now_playing/votes`).on('value', snap => {
+                        const votes = snap.val() || {};
+                        updateMobileVotesUI(votes);
+                    });
+
+                    // Alerta "Sua Vez" (quando começa a cantar)
+                    const myFirst = (currentUser?.displayName || '').split(' ')[0].toLowerCase();
+                    const singer = (np.singer || '').toLowerCase();
+                    if (myFirst && singer.includes(myFirst) && !isAlreadySinging) {
+                        triggernotification('🎉 SUA VEZ! VAI PRO PALCO! 🎤', true);
+                        triggerSystemNotification('🎉 SUA VEZ!', 'Sua música começou! Vai pro palco!');
+                        isAlreadySinging = true;
+                    } else if (!singer.includes(myFirst)) {
+                        isAlreadySinging = false;
+                    }
+                } else {
+                    if (targetBar) targetBar.style.display = 'none';
+                    isAlreadySinging = false;
+                }
+            });
+        }
+
+        let syncedQueue = [];
+        let currentProgress = { current: 0, total: 0 };
+        let hasAlertedNext = false;
+        let isAlreadySinging = false;
+
+        function renderQueueSync(queue) {
+            syncedQueue = queue;
+            const container = document.getElementById('queueContent');
+            if (!container) { console.error("❌ Erro: Container 'queueContent' não encontrado."); return; }
+
+            container.innerHTML = '';
+            queue.forEach((item, index) => {
+                const isMe = currentUser && (item.singer.toLowerCase().includes(currentUser.displayName?.split(' ')[0].toLowerCase()));
+                const isNow = index === 0;
+
+                const card = document.createElement('div');
+                card.className = `queue-card ${isMe ? 'is-me' : ''} ${isNow ? 'is-active' : ''}`;
+                card.innerHTML = `
+                    <div class="queue-index">${isNow ? '▶' : index + 1}</div>
+                    <div class="queue-details">
+                        <div class="queue-song-title">${item.title}</div>
+                        <div class="queue-song-artist">${item.artist}</div>
+                        <div class="queue-singer-name">🎤 ${item.singer.toUpperCase()} ${isNow ? '(CANTANDO)' : ''}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function forceSyncQueue() {
+            if (!currentRoomCode) return;
+            console.log("🔄 Forçando sincronização...");
+            db.ref(`salas/${currentRoomCode}/queue_sync`).once('value', snap => {
+                renderQueueSync(snap.val() || []);
+            });
+        }
+
+        async function sendVote(stars) {
+            if (!currentRoomCode || !currentUser) return;
+            const voteRef = db.ref(`salas/${currentRoomCode}/now_playing/votes/${currentUser.uid}`);
+
+            // Pintar estrelas (v10)
+            updateStarsUI(stars);
+
+            const feedback = document.getElementById('voteFeedback');
+            if (feedback) {
+                feedback.style.display = 'block';
+                setTimeout(() => feedback.style.display = 'none', 2000);
+            }
+
+            try {
+                await voteRef.set({ stars: stars, timestamp: firebase.database.ServerValue.TIMESTAMP });
+            } catch (e) { console.error("Erro ao votar:", e); }
+        }
+
+        function updateStarsUI(val) {
+            const btns = document.querySelectorAll('.star-btn');
+            btns.forEach(btn => {
+                const starVal = parseInt(btn.getAttribute('data-value'));
+                if (starVal <= val) {
+                    btn.classList.add('voted');
+                    btn.style.opacity = '1';
+                    btn.style.transform = 'scale(1.1)';
+                } else {
+                    btn.classList.remove('voted');
+                    btn.style.opacity = '0.4';
+                    btn.style.transform = 'scale(1)';
+                }
+            });
+        }
+
+        // --- DEDÔMETRO (👍 vs 👎) (Novo!) ---
+        async function sendLikeDislike(type) {
+            if (!currentRoomCode) {
+                alert("Você precisa estar conectado a uma sala!");
+                return;
+            }
+            if (!currentUser) {
+                alert("Faça login para votar no Dedômetro!");
+                return;
+            }
+            const dedoRef = db.ref(`salas/${currentRoomCode}/now_playing/dedometro/${currentUser.uid}`);
+
+            // Feedback tátil/visual
+            if (window.navigator.vibrate) window.navigator.vibrate(30);
+
+            const likeBtn = document.querySelector('.dedo-btn.like-btn');
+            const dislikeBtn = document.querySelector('.dedo-btn.dislike-btn');
+            if (likeBtn && dislikeBtn) {
+                if (type === 'like') {
+                    likeBtn.style.background = '#00ff80';
+                    likeBtn.style.color = '#000';
+                    dislikeBtn.style.background = 'rgba(255,68,68,0.1)';
+                    dislikeBtn.style.color = '#ff4444';
+                } else {
+                    dislikeBtn.style.background = '#ff4444';
+                    dislikeBtn.style.color = '#000';
+                    likeBtn.style.background = 'rgba(0,255,128,0.1)';
+                    likeBtn.style.color = '#00ff80';
+                }
+            }
+
+            try {
+                await dedoRef.set({ type: type, timestamp: firebase.database.ServerValue.TIMESTAMP });
+            } catch (e) { console.error("Erro ao votar no Dedômetro:", e); }
+        }
+
+        // --- ENVIAR MENSAGENS DE TEXTO NA TELA (Novo!) ---
+        let lastMessageTime = 0;
+        function sendTextMessage() {
+            if (!currentRoomCode) {
+                alert("Você precisa estar conectado a uma sala para enviar mensagens!");
+                return;
+            }
+            if (!currentUser) {
+                alert("Faça login para enviar mensagens!");
+                return;
+            }
+            const input = document.getElementById('mobileMsgText');
+            if (!input) return;
+            const text = input.value.trim();
+            if (!text) return;
+
+            // Rate limit local: 8 segundos
+            const now = Date.now();
+            if (now - lastMessageTime < 8000) {
+                const remaining = Math.ceil((8000 - (now - lastMessageTime)) / 1000);
+                alert(`Aguarde ${remaining}s para enviar outra mensagem!`);
+                return;
+            }
+
+            const senderName = currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'Convidado');
+            const senderPhoto = currentUser.photoURL || '';
+
+            // Envia no mesmo nó de reações, identificada por type: 'message'
+            const ref = db.ref(`salas/${currentRoomCode}/reactions`);
+            ref.push({
+                type: 'message',
+                senderUid: currentUser.uid,
+                text: text,
+                sender: senderName.split(' ')[0],
+                photo: senderPhoto,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                input.value = '';
+                lastMessageTime = Date.now();
+
+                // Cooldown visual do botão
+                const btn = document.getElementById('btnSendMobileMsg');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    let sec = 8;
+                    btn.innerText = sec + "s";
+                    const timer = setInterval(() => {
+                        sec--;
+                        if (sec <= 0) {
+                            clearInterval(timer);
+                            btn.disabled = false;
+                            btn.style.opacity = '1';
+                            btn.innerText = "ENVIAR";
+                        } else {
+                            btn.innerText = sec + "s";
+                        }
+                    }, 1000);
+                }
+            }).catch(e => {
+                console.error("Erro ao enviar mensagem:", e);
+                alert("Erro ao enviar: " + e.message);
+            });
+        }
+
+        // --- POPULARIDADE DETERMINÍSTICA DAS MÚSICAS (Novo!) ---
+        function getSongPopularity(songId) {
+            let hash = 0;
+            for (let i = 0; i < songId.length; i++) {
+                hash = songId.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const baseRequests = Math.abs(hash % 5) + 1; // De 1 a 5 pedidos (perfeito e super realista!)
+            return baseRequests;
+        }
+
+        let currentSurpriseSong = null;
+
+        function closeSurpriseModal() {
+            const overlay = document.getElementById('surpriseModalOverlay');
+            overlay.style.opacity = '0';
+            overlay.querySelector('.mobile-modal').style.transform = 'scale(0.9) translateY(20px)';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                currentSurpriseSong = null;
+            }, 350);
+        }
+
+        function confirmSurpriseModal() {
+            if (currentSurpriseSong) {
+                const song = currentSurpriseSong;
+                closeSurpriseModal();
+                requestSong(song.id, song.title, song.artist);
+            }
+        }
+
+        // --- PEDIDO SURPRESA / ME SURPREENDE (Novo!) ---
+        function requestSurpriseSong() {
+            if (!currentRoomCode) {
+                alert("Você precisa estar conectado a uma sala para pedir uma música!");
+                showRoomFinderModal();
+                return;
+            }
+            if (!currentUser) {
+                alert("Faça login para pedir uma música!");
+                return;
+            }
+
+            let pool = [];
+            let source = "";
+
+            // 1. Tenta favoritos
+            if (favorites && favorites.length > 0) {
+                pool = catalog.filter(s => favorites.includes(s.id));
+                source = "seus favoritos";
+            }
+
+            // 2. Fallback para histórico se favoritos estiverem vazios
+            if (pool.length === 0 && userHistory && Object.keys(userHistory).length > 0) {
+                const historyIds = Object.keys(userHistory);
+                pool = catalog.filter(s => historyIds.includes(s.id));
+                source = "seu histórico";
+            }
+
+            // 3. Fallback para catálogo geral
+            if (pool.length === 0 && catalog && catalog.length > 0) {
+                pool = catalog;
+                source = "nosso catálogo";
+            }
+
+            if (pool.length === 0) {
+                alert("Erro: O catálogo está vazio ou indisponível.");
+                return;
+            }
+
+            // Seleciona uma aleatória do pool
+            const randomSong = pool[Math.floor(Math.random() * pool.length)];
+
+            currentSurpriseSong = randomSong;
+
+            // Preenche e exibe o modal estilizado
+            document.getElementById('surpriseSongTitle').innerText = `"${randomSong.title}"`;
+            document.getElementById('surpriseSongArtist').innerText = randomSong.artist;
+            document.getElementById('surpriseSongSource').innerText = `(Baseado em ${source})`;
+
+            const overlay = document.getElementById('surpriseModalOverlay');
+            const modal = overlay.querySelector('.mobile-modal');
+
+            overlay.style.display = 'flex';
+            overlay.style.opacity = '1';
+            overlay.style.pointerEvents = 'all';
+            modal.style.display = 'block';
+            modal.style.transform = 'scale(1) translateY(0)';
+            modal.style.opacity = '1';
+        }
+
+        function updateMobileVotesUI(votes) {
+            const entries = Object.values(votes);
+            const avgDisplay = document.getElementById('avgVoteDisplay');
+            if (!avgDisplay) return;
+
+            if (entries.length === 0) {
+                avgDisplay.innerText = '⭐ 0.0';
+                return;
+            }
+
+            const avg = entries.reduce((a, b) => a + (b.stars || 0), 0) / entries.length;
+            avgDisplay.innerText = `⭐ ${avg.toFixed(1)}`;
+
+            // Se o usuário já votou nesta rodada, garante que a UI reflita
+            if (currentUser && votes[currentUser.uid]) {
+                updateStarsUI(votes[currentUser.uid].stars);
+            }
+        }
+
+        let lastQueueID = "";
+        function checkProximityAlerts(queue) {
+            if (!currentUser || queue.length < 2) {
+                hasAlertedNext = false;
+                return;
+            }
+
+            // ID da música atual (para não repetir o alerta se a fila mudar sem trocar o primeiro)
+            const currentSongID = queue[0].id + "_" + (queue[0].singer || "");
+
+            // O próximo da fila (index 1) é o usuário logado?
+            const nextSinger = (queue[1].singer || '').toLowerCase();
+            const myName = (currentUser.displayName || '').split(' ')[0].toLowerCase();
+
+            if (nextSinger.includes(myName) && lastQueueID !== currentSongID) {
+                // DISPARA ALERTA IMEDIATO: O anterior começou a cantar!
+                console.log("🔔 ALERTA DE PRÓXIMO: Anterior começou. Preparando...");
+                triggernotification('⚠️ PREPARA O GOGÓ! Você É O PRÓXIMO! 🎤', true);
+                showVoiceAlert(queue[1]);
+                triggerSystemNotification('⚠️ PREPARA O GOGÓ!', 'Você é o próximo a cantar!');
+                lastQueueID = currentSongID; // Registra que já avisou para esta música
+            }
+        }
+
+        function showVoiceAlert(song) {
+            const overlay = document.getElementById('voiceAlert');
+            document.getElementById('vaSongTitle').innerText = song.title;
+            document.getElementById('vaSongArtist').innerText = song.artist;
+            overlay.style.display = 'flex';
+            if ('vibrate' in navigator) navigator.vibrate([300, 100, 300, 100, 500]);
+        }
+
+        function closeVoiceAlert() {
+            document.getElementById('voiceAlert').style.display = 'none';
+        }
+
+
+
+        function triggernotification(msg, isSuaVez = false) {
+            const el = document.getElementById('queueMsg');
+            el.innerHTML = msg;
+            el.style.display = 'block';
+            if (isSuaVez) {
+                el.classList.add('sua-vez');
+                el.style.background = '';
+            } else {
+                el.classList.remove('sua-vez');
+                el.style.background = 'linear-gradient(90deg, #d946ef, #a020f0)';
+            }
+            if ('vibrate' in navigator) navigator.vibrate([200, 100, 200, 100, 400]);
+            setTimeout(() => {
+                el.style.display = 'none';
+                el.classList.remove('sua-vez');
+            }, 8000);
+        }
+
+        // ════════════════════════════════
+        // CATÁLOGO
+        // ════════════════════════════════
+        // Carregamento direto via .once() — mais confiável que .on() em servidores com CSP restritivo
+        (async function loadCatalog() {
+            console.log("📦 [CATALOGO] Iniciando carregamento...");
+            try {
+                const snap = await db.ref('config/catalog').once('value');
+                const config = snap.val();
+                console.log("📦 [CATALOGO] Config obtida:", JSON.stringify(config));
+
+                if (!config) {
+                    console.warn("📦 [CATALOGO] config é null — tentando fallback local");
+                    loadLocalFallback();
+                    return;
+                }
+
+                const totalChunks = config.totalChunks || 0;
+                const mode = config.mode || 'legacy';
+                console.log("📦 [CATALOGO] mode:", mode, "chunks:", totalChunks);
+
+                if (mode === 'fragmented' && totalChunks > 0) {
+                    const promises = [];
+                    for (let i = 0; i < totalChunks; i++) {
+                        promises.push(db.ref(`catalog_chunks/part_${i}`).once('value').then(s => s.val()));
+                    }
+
+                    const results = await Promise.all(promises);
+                    const allSongs = results.flat().filter(s => s !== null);
+                    console.log("📦 [CATALOGO] Songs carregadas:", allSongs.length);
+
+                    processCatalog(allSongs);
+                    console.log("📦 [CATALOGO] ✅ Concluído. catalog.length:", catalog.length);
+                    showMobileToast(`${allSongs.length} músicas carregadas (v${(config.version || '').slice(-5)})`);
+                } else if (config.url) {
+                    const blob = await firebase.storage().ref('songs.json').getBlob();
+                    const text = await blob.text();
+                    const data = JSON.parse(text);
+                    processCatalog(data.musicas);
+                    showMobileToast(`${data.musicas.length} músicas (Legacy)`);
+                }
+            } catch (err) {
+                console.error("❌ [CATALOGO] ERRO:", err.message, err.stack);
+                loadLocalFallback();
+            }
+        })();
+
+        function showMobileToast(text) {
+            const t = document.createElement('div');
+            t.style = "position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(217,70,239,0.9); color:white; padding:8px 15px; border-radius:20px; font-size:12px; z-index:10000; font-weight:bold; white-space:nowrap; border:1px solid rgba(255,255,255,0.3);";
+            t.innerText = text;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        function processCatalog(musicas) {
+            catalog = musicas.map(m => ({
+                id: String(m.codigo).padStart(5, '0'),
+                artist: m.artista || '',
+                title: m.titulo || '',
+                lyrics: m.inicioletra || '',
+                estilo: m.estilo || 'Pop'
+            }));
+            buildAlphaIndex();
+            renderPage(0);
+        }
+
+        function loadLocalFallback() {
+            fetch('songs.json')
+                .then(r => r.json())
+                .then(data => processCatalog(data.musicas))
+                .catch(() => {
+                    document.getElementById('mobileList').innerHTML =
+                        '<div style="text-align:center;padding:40px;opacity:0.5;">Erro ao carregar catálogo.</div>';
+                });
+        }
+
+        function normalizeStr(str) {
+            return str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : '';
+        }
+
+        function render(items) {
+            const list = document.getElementById('mobileList');
+            if (!items.length) {
+                list.innerHTML = '<div style="text-align:center;padding:40px;opacity:0.4;">Nenhuma música encontrada.</div>';
+                return;
+            }
+            list.innerHTML = '';
+            items.forEach(song => {
+                const isFav = favorites.includes(song.id);
+                const count = userHistory[song.id]?.count || 0;
+                const div = document.createElement('div');
+                div.className = 'song-card';
+                div.innerHTML = `
+                    <div class="info">
+                        <div class="title">
+                            ${song.title}
+                            ${count > 0 ? `<span style="font-size:0.58rem;background:rgba(217,70,239,0.18);padding:2px 6px;border-radius:8px;margin-left:4px;">🌟 ${count}x</span>` : ''}
+                        </div>
+                        <div class="artist">${song.artist}</div>
+                        ${song.lyrics ? `<span class="lyrics-preview">${song.lyrics}</span>` : ''}
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <div class="song-id"># ${song.id}</div>
+                            <span style="font-size:0.65rem; color:#ffa500; font-weight:700;"><i class="fas fa-fire" style="color:#ffa500; margin-right:3px;"></i> ${getSongPopularity(song.id)} ${getSongPopularity(song.id) === 1 ? 'pedido' : 'pedidos'}</span>
+                        </div>
+                    </div>
+                    <div class="song-actions">
+                        <i class="fas fa-star star-btn ${isFav ? 'active' : ''}"
+                           onclick="toggleFavorite('${song.id}', this)"></i>
+                        ${currentRoomCode ? `
+                        <button class="btn-request"
+                                onclick="requestSong('${song.id}','${song.title.replace(/'/g, "\\'")}','${song.artist.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>` : `
+                        <button class="btn-request connect-hint" onclick="showRoomFinderModal()" title="Conecte-se a uma sala para pedir">
+                            <i class="fas fa-link"></i>
+                        </button>
+                        `}
+                    </div>`;
+                list.appendChild(div);
+            });
+        }
+
+        // ════════════════════════════════
+        // FAVORITOS
+        // ════════════════════════════════
+        function toggleFavorite(id, el) {
+            const idx = favorites.indexOf(id);
+            if (idx > -1) {
+                favorites.splice(idx, 1);
+                el.classList.remove('active');
+            } else {
+                favorites.push(id);
+                el.classList.add('active');
+            }
+
+            // Persistência Local
+            localStorage.setItem('karaoke_party_favorites', JSON.stringify(favorites));
+
+            // Persistência Nuvem (se logado)
+            if (currentUser) {
+                db.ref(`users/${currentUser.uid}/favorites`).set(favorites);
+            }
+        }
+
+        // ════════════════════════════════
+        // PEDIDO DE MÚSICA
+        // ════════════════════════════════
+        function requestSong(id, title, artist) {
+            console.log("🖱️ Clique em pedir música:", title);
+            if (!currentUser) { alert('Faça login primeiro!'); return; }
+            if (!currentRoomCode) { alert('Erro: Sala não identificada.'); return; }
+
+            pendingRequest = { id, title, artist };
+
+            const overlay = document.getElementById('nameModalOverlay');
+            const modal = overlay.querySelector('.mobile-modal');
+            const input = document.getElementById('modalSingerName');
+
+            // Força reset de estilos para garantir visibilidade
+            overlay.style.display = 'flex';
+            overlay.style.opacity = '1';
+            overlay.style.pointerEvents = 'all';
+            modal.style.display = 'block';
+            modal.style.transform = 'scale(1) translateY(0)';
+            modal.style.opacity = '1';
+
+            SingerSelection.mount(document.getElementById('activeUsersChips'), input, activeUsers, currentUser);
+
+            setTimeout(() => input.focus(), 100);
+        }
+
+        function closeNameModal() {
+            const overlay = document.getElementById('nameModalOverlay');
+            overlay.style.opacity = '0';
+            overlay.querySelector('.mobile-modal').style.transform = 'scale(0.9) translateY(20px)';
+            setTimeout(() => { overlay.style.display = 'none'; pendingRequest = null; }, 350);
+        }
+
+        let sendingSongRequest = false;
+        function confirmNameModal() {
+            if (sendingSongRequest || !currentUser) return;
+            const selection = SingerSelection.current();
+            if (!selection.singer) { alert("Selecione pelo menos uma pessoa para cantar."); return; }
+            const name = selection.singer;
+            if (!pendingRequest) { console.error("❌ Erro: Nenhum pedido pendente."); return; }
+            if (!currentRoomCode) {
+                alert("❌ Erro: Sem código de sala. Tente escanear o QR Code novamente.");
+                console.error("❌ Erro: currentRoomCode nulo não envio.");
+                return;
+            }
+
+            console.log("📤 Enviando pedido para Firebase:", pendingRequest.title, "Cantor:", name);
+
+            const request = { ...pendingRequest };
+            sendingSongRequest = true;
+            db.ref(`salas/${currentRoomCode}/pedidos`).push({
+                id: pendingRequest.id,
+                title: pendingRequest.title,
+                artist: pendingRequest.artist,
+                singer: name,
+                singerUid: currentUser.uid, // Autor legado, mantido para as regras existentes
+                requesterUid: currentUser.uid,
+                ...selection,
+                processed: false,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                console.log("✅ Pedido enviado com sucesso!");
+                triggernotification(`🎤 NA FILA, ${name.toUpperCase()}!`);
+                updateHistory(request.id, request.title, request.artist);
+                closeNameModal();
+            }).catch(err => {
+                console.error("❌ Falha não envio do Firebase:", err);
+                alert('Erro ao enviar pedido: ' + err.message);
+            }).finally(() => { sendingSongRequest = false; });
+        }
+
+        function updateHistory(id, title, artist) {
+            if (!currentUser) return;
+            const count = (userHistory[id]?.count || 0) + 1;
+            db.ref(`users/${currentUser.uid}/history/${id}`).set({
+                id, title, artist, count, lastSung: firebase.database.ServerValue.TIMESTAMP
+            });
+        }
+
+        // ════════════════════════════════
+        // SEARCH & SHUFFLE
+        // ════════════════════════════════
+        document.getElementById('mobileSearch').addEventListener('input', e => {
+            const term = normalizeStr(e.target.value);
+            activeAlphaFilter = null;
+            updateAlphaIndex();
+            if (term.length < 2) { renderPage(0); return; }
+            const filtered = catalog.filter(s =>
+                normalizeStr(s.title).includes(term) ||
+                normalizeStr(s.artist).includes(term) ||
+                normalizeStr(s.lyrics).includes(term) ||
+                String(s.id).includes(term)
+            );
+            renderPage(0, filtered);
+        });
+
+        document.getElementById('btnMobileShuffle').addEventListener('click', () => {
+            if (catalog.length < 3) return;
+            document.getElementById('mobileSearch').value = '';
+            const shuffled = [...catalog].sort(() => 0.5 - Math.random()).slice(0, 5);
+            render(shuffled);
+        });
+
+        // ════════════════════════════════
+        // FEEDBACK E RELATÓRIO DE ERROS
+        // ════════════════════════════════
+        function sendSuggestion() {
+            const text = document.getElementById('suggestText').value.trim();
+            if (!text) {
+                alert("Por favor, digite sua sugestão antes de enviar.");
+                return;
+            }
+
+            const btn = document.querySelector('.btn-feedback-submit');
+            btn.innerText = "ENVIANDO...";
+            btn.disabled = true;
+
+            const data = {
+                msg: text,
+                room: currentRoomCode || 'Sem sala',
+                user_uid: currentUser ? currentUser.uid : 'anonimo',
+                user_name: currentUser ? currentUser.displayName : 'Anônimo',
+                user_email: currentUser ? currentUser.email : 'Sem e-mail',
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            db.ref('feedback/suggestions').push(data)
+                .then(() => {
+                    alert("Sugestão enviada com sucesso! Muito obrigado.");
+                    document.getElementById('suggestText').value = "";
+                })
+                .catch(e => {
+                    alert('Erro ao enviar: ' + e.message);
+                })
+                .finally(() => {
+                    btn.innerText = "ENVIAR SUGESTÃO";
+                    btn.disabled = false;
+                });
+        }
+
+        function sendReport() {
+            const songName = document.getElementById('reportSongName').value.trim();
+            const issueType = document.getElementById('reportIssueType').value;
+            const details = document.getElementById('reportDetails').value.trim();
+
+            if (!songName || !issueType) {
+                alert("Por favor, preencha o nome da música e o tipo de problema.");
+                return;
+            }
+
+            const btn = document.querySelector('.btn-feedback-report');
+            btn.innerText = "ENVIANDO...";
+            btn.disabled = true;
+
+            const data = {
+                song: songName,
+                issue: issueType,
+                details: details,
+                room: currentRoomCode || 'Sem sala',
+                user_uid: currentUser ? currentUser.uid : 'anonimo',
+                user_name: currentUser ? currentUser.displayName : 'Anônimo',
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            db.ref('feedback/reports').push(data)
+                .then(() => {
+                    alert("Relatório enviado! Nós verificaremos essa música em breve.");
+                    document.getElementById('reportSongName').value = "";
+                    document.getElementById('reportIssueType').value = "";
+                    document.getElementById('reportDetails').value = "";
+                })
+                .catch(e => {
+                    alert('Erro ao enviar: ' + e.message);
+                })
+                .finally(() => {
+                    btn.innerText = "ENVIAR AVISO";
+                    btn.disabled = false;
+                });
+        }
+        function handlePhoneInput(el) {
+            let v = el.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+
+            let val = '';
+            if (v.length > 0) val = '(' + v.substring(0, 2);
+            if (v.length > 2) val += ') ' + v.substring(2, 7);
+            if (v.length > 7) val += '-' + v.substring(7, 11);
+
+            el.value = val;
+
+            const btn = document.getElementById('btnSaveWhatsapp');
+            if (v.length >= 10) {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            } else {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+            }
+        }
+
+        function saveWhatsapp() {
+            if (!currentUser) return;
+            const whatsapp = document.getElementById('userWhatsapp').value;
+            const btn = document.getElementById('btnSaveWhatsapp');
+
+            btn.innerText = "SALVANDO...";
+            btn.disabled = true;
+
+            db.ref(`users/${currentUser.uid}/whatsapp`).set(whatsapp).then(() => {
+                const overlay = document.getElementById('whatsappOverlay');
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.style.display = 'none', 300);
+            }).catch(err => {
+                alert("Erro ao salvar: " + err.message);
+                btn.innerText = "CONFIRMAR E CURTIR";
+                btn.disabled = false;
+            });
+        }
+        function sendReaction(emoji) {
+            if (!currentUser) { alert('Faça login para enviar reações!'); return; }
+            if (!currentRoomCode) {
+                console.error("❌ Erro: currentRoomCode nulo no mobile!");
+                return;
+            }
+            const path = `salas/${currentRoomCode}/reactions`;
+            console.log("🌸 [MOBILE] Enviando emoji para:", path, emoji);
+            const ref = db.ref(path);
+            ref.push({
+                senderUid: currentUser.uid,
+                emoji: emoji,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                console.log("✅ [MOBILE] Emoji enviado com sucesso!");
+            }).catch(e => {
+                console.error("❌ [MOBILE] Erro ao enviar emoji:", e);
+                alert("Erro ao enviar: " + e.message);
+            });
+
+            if (window.navigator.vibrate) window.navigator.vibrate(50);
+        }
+        // ════════════════════════════════════════════════════════
+        // FOTO DE PERFIL CUSTOMIZÁVEL
+        // ════════════════════════════════════════════════════════
+
+        function loadUserAvatar(user) {
+            if (!user) return;
+            const pic = document.getElementById('headerUserPic');
+            const avatarStyle = 'width:32px;height:32px;min-width:32px;max-width:32px;border-radius:50%;object-fit:cover;border:2px solid #d946ef;flex-shrink:0;cursor:pointer;display:block;';
+            const cacheKey = `kp_avatar_data_${user.uid}`;
+
+            const showPic = (src) => { pic.src = src; pic.style.cssText = avatarStyle; };
+
+            const showInitials = () => {
+                const init = (user.displayName || 'U').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+                showPic(generateInitialsAvatar(init));
+            };
+
+            // Tenta cachear a foto como data URL (para uso no Canvas sem CORS)
+            const tryCache = (url) => {
+                // 1. Se já temos cache local, usa direto
+                const cached = localStorage.getItem(cacheKey);
+                if (cached) { showPic(cached); return; }
+
+                // 2. Sem cache: tenta carregar com crossOrigin para extrair data URL
+                const corsImg = new Image();
+                corsImg.crossOrigin = 'anonymous';
+                corsImg.onload = () => {
+                    try {
+                        const c = document.createElement('canvas');
+                        c.width = 400; c.height = 400;
+                        c.getContext('2d').drawImage(corsImg, 0, 0, 400, 400);
+                        const dataUrl = c.toDataURL('image/jpeg', 0.85);
+                        localStorage.setItem(cacheKey, dataUrl);
+                        showPic(dataUrl);
+                    } catch (e) {
+                        // Canvas tainted: exibe URL diretamente (só o display funciona)
+                        showPic(url);
+                    }
+                };
+                corsImg.onerror = () => {
+                    // crossOrigin falhou (CORS não configurado): exibe URL normal
+                    showPic(url);
+                };
+                corsImg.src = url;
+            };
+
+            db.ref(`users/${user.uid}/customPhoto`).once('value', snap => {
+                const photoUrl = snap.val() || user.photoURL;
+                if (photoUrl) tryCache(photoUrl);
+                else showInitials();
+            });
+        }
+
+        function generateInitialsAvatar(initials) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 100; canvas.height = 100;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#d946ef';
+            ctx.beginPath(); ctx.arc(50, 50, 50, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 38px sans-serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(initials, 50, 50);
+            return canvas.toDataURL();
+        }
+
+        function openPhotoEditModal() {
+            const modal = document.getElementById('photoEditModal');
+            if (!modal) return;
+
+            const preview = document.getElementById('photoPreviewCurrent');
+            const initialsEl = document.getElementById('photoPreviewInitials');
+            const status = document.getElementById('photoUploadStatus');
+            const nameStatus = document.getElementById('nameChangeStatus');
+            if (status) status.textContent = '';
+            if (nameStatus) nameStatus.textContent = '';
+
+            if (currentUser) {
+                // Foto
+                db.ref(`users/${currentUser.uid}/customPhoto`).once('value', snap => {
+                    const customPhoto = snap.val();
+                    const photoUrl = customPhoto || currentUser.photoURL;
+                    if (photoUrl && preview) {
+                        preview.src = photoUrl;
+                        preview.style.display = 'block';
+                        if (initialsEl) initialsEl.style.display = 'none';
+                    } else {
+                        if (preview) preview.style.display = 'none';
+                        const init = (currentUser.displayName || 'U').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+                        if (initialsEl) { initialsEl.textContent = init; initialsEl.style.display = 'flex'; }
+                    }
+                });
+
+                // Nome: busca nome customizado salvo no Firebase (prioridade) ou usa do Google
+                db.ref(`users/${currentUser.uid}/customName`).once('value', snap => {
+                    const savedName = snap.val();
+                    const nameInput = document.getElementById('displayNameInput');
+                    if (nameInput) {
+                        nameInput.value = savedName || currentUser.displayName || '';
+                    }
+                });
+            } else {
+                if (preview) preview.style.display = 'none';
+                if (initialsEl) { initialsEl.textContent = '?'; initialsEl.style.display = 'flex'; }
+            }
+
+            modal.style.display = 'flex';
+            requestAnimationFrame(() => { modal.style.opacity = '1'; });
+        }
+        window.openPhotoEditModal = openPhotoEditModal;
+
+        function closePhotoEditModal() {
+            const modal = document.getElementById('photoEditModal');
+            if (!modal) return;
+            modal.style.opacity = '0';
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+
+        async function saveDisplayName() {
+            if (!currentUser) return;
+            const input = document.getElementById('displayNameInput');
+            const statusEl = document.getElementById('nameChangeStatus');
+            const newName = (input?.value || '').trim();
+
+            if (!newName || newName.length < 2) {
+                if (statusEl) { statusEl.style.color = '#ff4444'; statusEl.textContent = 'Nome muito curto (mínimo 2 letras).'; }
+                return;
+            }
+
+            if (statusEl) { statusEl.style.color = '#00f2ff'; statusEl.textContent = '⏳ Salvando...'; }
+
+            try {
+                // Salva nome customizado no Firebase (campo separado para não conflitar com auth)
+                await db.ref(`users/${currentUser.uid}`).update({
+                    customName: newName,
+                    name: newName
+                });
+
+                // Atualiza header imediatamente
+                const firstName = newName.split(' ')[0];
+                const headerName = document.getElementById('headerUserName');
+                if (headerName) headerName.innerText = firstName;
+
+                // Atualiza presença na sala (chips de usuários ativos)
+                if (currentRoomCode) {
+                    await db.ref(`salas/${currentRoomCode}/active_users/${currentUser.uid}/name`).set(firstName);
+                }
+
+                if (statusEl) { statusEl.style.color = '#00ff88'; statusEl.textContent = '✅ Nome salvo! Vai aparecer assim nos pedidos.'; }
+                setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 3000);
+
+            } catch (e) {
+                console.error('Erro ao salvar nome:', e);
+                if (statusEl) { statusEl.style.color = '#ff4444'; statusEl.textContent = 'Erro ao salvar. Tente novamente.'; }
+            }
+        }
+        window.saveDisplayName = saveDisplayName;
+        window.handlePhotoFile = handlePhotoFile;
+        window.useGooglePhoto = useGooglePhoto;
+        window.closeScoreCard = closeScoreCard;
+        window.shareScoreCard = shareScoreCard;
+        window.downloadScoreCard = downloadScoreCard;
+
+        function handlePhotoFile(input) {
+            const file = input.files[0];
+            if (!file || !currentUser) return;
+            const status = document.getElementById('photoUploadStatus');
+            status.textContent = '⏳ Redimensionando...';
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const size = 400;
+                    canvas.width = size; canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+                    const side = Math.min(img.width, img.height);
+                    const ox = (img.width - side) / 2;
+                    const oy = (img.height - side) / 2;
+                    ctx.drawImage(img, ox, oy, side, side, 0, 0, size, size);
+
+                    // Cacheia o data URL no localStorage para uso no canvas do score card (sem CORS)
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                    localStorage.setItem(`kp_avatar_data_${currentUser.uid}`, dataUrl);
+
+                    canvas.toBlob(blob => uploadAvatarToStorage(blob, dataUrl), 'image/jpeg', 0.85);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            input.value = '';
+        }
+
+        async function uploadAvatarToStorage(blob, cachedDataUrl) {
+            if (!currentUser) return;
+            const status = document.getElementById('photoUploadStatus');
+            status.textContent = '⬆️ Enviando foto...';
+
+            try {
+                const storage = firebase.storage();
+                const ref = storage.ref(`avatars/${currentUser.uid}.jpg`);
+                await ref.put(blob, { contentType: 'image/jpeg' });
+                const url = await ref.getDownloadURL();
+
+                // Salva URL no Realtime DB
+                await db.ref(`users/${currentUser.uid}/customPhoto`).set(url);
+
+                // Atualiza avatar na barra
+                const pic = document.getElementById('headerUserPic');
+                // Usa o data URL cacheado para a barra (sem CORS)
+                if (cachedDataUrl) pic.src = cachedDataUrl;
+                else pic.src = url;
+
+                const preview = document.getElementById('photoPreviewCurrent');
+                if (preview) { preview.src = cachedDataUrl || url; preview.style.display = 'block'; }
+                const initialsEl = document.getElementById('photoPreviewInitials');
+                if (initialsEl) initialsEl.style.display = 'none';
+
+                status.textContent = '✅ Foto atualizada!';
+                setTimeout(closePhotoEditModal, 1200);
+            } catch (err) {
+                console.error('Erro ao fazer upload:', err);
+                status.textContent = '❌ Erro: ' + err.message;
+            }
+        }
+
+        function useGooglePhoto() {
+            if (!currentUser || !currentUser.photoURL) {
+                document.getElementById('photoUploadStatus').textContent = '❌ Sem foto do Google disponível.';
+                return;
+            }
+            const status = document.getElementById('photoUploadStatus');
+            status.textContent = '⏳ Restaurando...';
+
+            // Remove customPhoto → volta a usar foto do Google
+            db.ref(`users/${currentUser.uid}/customPhoto`).remove().then(() => {
+                const pic = document.getElementById('headerUserPic');
+                pic.src = currentUser.photoURL;
+                const preview = document.getElementById('photoPreviewCurrent');
+                preview.src = currentUser.photoURL;
+                preview.style.display = 'block';
+                document.getElementById('photoPreviewInitials').style.display = 'none';
+                status.textContent = '✅ Usando foto do Google!';
+                setTimeout(closePhotoEditModal, 1200);
+            });
+        }
+
+        // ════════════════════════════════════════════════════════
+        // SCORE CARD COMPARTILHÁVEL
+        // ════════════════════════════════════════════════════════
+
+        let scoreCardBlob = null;
+        let lastSeenScoreTimestamp = 0;
+        let scoreCardListenerRef = null;
+
+        function listenForScoreCard() {
+            if (!currentRoomCode || !currentUser) return;
+
+            // Recupera o timestamp do último card já visto (persiste entre logins)
+            const scoreUserUid = currentUser.uid;
+            const scoreRoom = currentRoomCode;
+            const storageKey = `kp_last_score_ts_${scoreRoom}_${scoreUserUid}`;
+            lastSeenScoreTimestamp = parseInt(localStorage.getItem(storageKey) || '0', 10);
+
+            if (scoreCardListenerRef) scoreCardListenerRef.off('value');
+            scoreCardListenerRef = db.ref(`salas/${currentRoomCode}/last_score`);
+            scoreCardListenerRef.on('value', snap => {
+                if (currentUser?.uid !== scoreUserUid || currentRoomCode !== scoreRoom) return;
+                const data = snap.val();
+                if (!data || !data.timestamp) return;
+
+                // Ignora scores antigos (mais de 5 minutos) para não reaparecer em logins futuros
+                const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+                if (data.timestamp < fiveMinutesAgo) return;
+
+                // Só dispara se for para este usuário E for um score novo (nunca visto antes)
+                if (SingerSelection.recipients(data).includes(scoreUserUid) && data.timestamp > lastSeenScoreTimestamp) {
+                    lastSeenScoreTimestamp = data.timestamp;
+                    localStorage.setItem(storageKey, data.timestamp);
+                    generateScoreCard(data);
+                }
+            });
+        }
+
+        let customBgDataUrl = null; // Armazena foto de fundo personalizada (data URL)
+        let currentBgMode = 'male'; // 'male', 'female', 'custom'
+
+        function openBgPicker() {
+            const modal = document.getElementById('bgPickerModal');
+            if (!modal) return;
+
+            // Marca o selecionado
+            document.getElementById('bgOptMale').classList.toggle('selected', currentBgMode === 'male');
+            document.getElementById('bgOptFemale').classList.toggle('selected', currentBgMode === 'female');
+
+            modal.style.display = 'flex';
+            requestAnimationFrame(() => { modal.style.opacity = '1'; });
+        }
+        window.openBgPicker = openBgPicker;
+
+        function closeBgPicker() {
+            const modal = document.getElementById('bgPickerModal');
+            if (!modal) return;
+            modal.style.opacity = '0';
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+        window.closeBgPicker = closeBgPicker;
+
+        function selectBgOption(mode) {
+            currentBgMode = mode;
+            customBgDataUrl = null; // Limpa custom
+
+            // Salvar preferência no DB
+            if (currentUser) {
+                db.ref(`users/${currentUser.uid}/scoreCardBg`).set(mode);
+            }
+
+            closeBgPicker();
+            // Regenera o card (usando os últimos dados salvos no canvas dataset ou escopo superior)
+            if (window.lastScoreData) {
+                generateScoreCard(window.lastScoreData);
+            }
+        }
+        window.selectBgOption = selectBgOption;
+
+        function handleBgFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    // 1080x1920 (9:16)
+                    const W = 1080, H = 1920;
+                    canvas.width = W; canvas.height = H;
+                    const ctx = canvas.getContext('2d');
+
+                    // Cortar cobrindo (object-fit: cover)
+                    const scale = Math.max(W / img.width, H / img.height);
+                    const drawW = img.width * scale;
+                    const drawH = img.height * scale;
+                    const drawX = (W - drawW) / 2;
+                    const drawY = (H - drawH) / 2;
+                    ctx.drawImage(img, drawX, drawY, drawW, drawH);
+
+                    customBgDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                    currentBgMode = 'custom';
+
+                    closeBgPicker();
+                    if (window.lastScoreData) {
+                        generateScoreCard(window.lastScoreData);
+                    }
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            input.value = '';
+        }
+        window.handleBgFile = handleBgFile;
+
+        // Recuperar preferência ao logar
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                db.ref(`users/${user.uid}/scoreCardBg`).once('value', snap => {
+                    if (snap.val()) {
+                        currentBgMode = snap.val();
+                    }
+                });
+            }
+            // ... (o resto do onAuthStateChanged está em outro script)
+        });
+
+        async function generateScoreCard(data) {
+            window.lastScoreData = data; // Salva para regeneração
+
+            const canvas = document.getElementById('scoreCardCanvas');
+            const W = 1080, H = 1920;
+            canvas.width = W; canvas.height = H;
+            const ctx = canvas.getContext('2d');
+
+            // --- FOTO DE FUNDO ---
+            ctx.fillStyle = '#0a0014';
+            ctx.fillRect(0, 0, W, H);
+
+            try {
+                let bgImgUrl = '';
+                if (currentBgMode === 'custom' && customBgDataUrl) {
+                    bgImgUrl = customBgDataUrl;
+                } else if (currentBgMode === 'female') {
+                    bgImgUrl = 'concert_bg_female.png';
+                } else {
+                    bgImgUrl = 'concert_bg_male.png';
+                }
+
+                const bgImg = await loadImageCors(bgImgUrl);
+
+                // Desenhar cobrindo toda a tela (object-fit: cover)
+                const scale = Math.max(W / bgImg.width, H / bgImg.height);
+                const drawW = bgImg.width * scale;
+                const drawH = bgImg.height * scale;
+                const drawX = (W - drawW) / 2;
+                const drawY = (H - drawH) / 2;
+
+                ctx.drawImage(bgImg, drawX, drawY, drawW, drawH);
+
+                // Overlay escuro para texto
+                const grad = ctx.createLinearGradient(0, 0, 0, H);
+                grad.addColorStop(0, 'rgba(10,0,20,0.5)'); // Topo escuro
+                grad.addColorStop(0.3, 'rgba(10,0,20,0)'); // Meio limpo
+                grad.addColorStop(0.7, 'rgba(10,0,20,0)');
+                grad.addColorStop(1, 'rgba(10,0,20,0.95)'); // Rodapé bem escuro
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, W, H);
+
+            } catch (e) {
+                console.error("Erro ao carregar imagem de fundo:", e);
+                // Fallback gradiente
+                const grad = ctx.createLinearGradient(0, 0, 0, H);
+                grad.addColorStop(0, '#0d0018');
+                grad.addColorStop(1, '#1a0035');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, W, H);
+            }
+
+            // --- TOPO: Avatar e Logo ---
+            const avatarY = 80;
+            const avatarX = 80;
+            const avatarR = 60;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(avatarX + avatarR, avatarY + avatarR, avatarR, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.clip();
+
+            let photoUrl = null;
+            let cachedDataUrl = null;
+            if (currentUser) {
+                cachedDataUrl = localStorage.getItem(`kp_avatar_data_${currentUser.uid}`);
+                if (!cachedDataUrl) {
+                    try {
+                        const snap = await db.ref(`users/${currentUser.uid}/customPhoto`).once('value');
+                        photoUrl = snap.val() || currentUser.photoURL;
+                    } catch (e) { photoUrl = currentUser.photoURL; }
+                }
+            }
+
+            if (cachedDataUrl) {
+                try {
+                    const img = await loadImageCors(cachedDataUrl);
+                    ctx.drawImage(img, avatarX, avatarY, avatarR * 2, avatarR * 2);
+                } catch (e) {
+                    drawInitialsOnCanvas(ctx, data.singer, avatarX + avatarR, avatarY + avatarR, avatarR);
+                }
+            } else if (photoUrl) {
+                try {
+                    const img = await loadImageCors(photoUrl);
+                    ctx.drawImage(img, avatarX, avatarY, avatarR * 2, avatarR * 2);
+                } catch (e) {
+                    drawInitialsOnCanvas(ctx, data.singer, avatarX + avatarR, avatarY + avatarR, avatarR);
+                }
+            } else {
+                drawInitialsOnCanvas(ctx, data.singer, avatarX + avatarR, avatarY + avatarR, avatarR);
+            }
+            ctx.restore();
+
+            ctx.strokeStyle = '#d946ef';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(avatarX + avatarR, avatarY + avatarR, avatarR + 2, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.fillStyle = '#d946ef';
+            ctx.font = 'bold 38px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('🎤 KARAOKE PARTY', avatarX + avatarR * 2 + 30, avatarY + 55);
+
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.font = '24px sans-serif';
+            ctx.fillText('Aqui começa a lenda!', avatarX + avatarR * 2 + 30, avatarY + 95);
+
+            // --- NOME DO CANTOR (Destaque esquerda) ---
+            const nameY = avatarY + avatarR * 2 + 140;
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 90px sans-serif';
+            ctx.textAlign = 'left';
+
+            const singerName = (data.singer || 'Cantor').toUpperCase();
+            // Tratar nome muito longo
+            const maxNameWidth = W - 160;
+            let finalNameY = nameY;
+            if (ctx.measureText(singerName).width > maxNameWidth) {
+                wrapText(ctx, singerName, 80, nameY, maxNameWidth, 95, 2);
+                // Estima nova posição Y (limitado a 2 linhas)
+                const lines = Math.min(Math.ceil(ctx.measureText(singerName).width / maxNameWidth), 2);
+                finalNameY = nameY + (lines - 1) * 95;
+            } else {
+                ctx.fillText(singerName, 80, nameY);
+            }
+
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.font = '36px sans-serif';
+            ctx.fillText('cantou com tudo! 🎤', 80, finalNameY + 60);
+
+            // --- PAINEL INFERIOR (Nota e Música) ---
+            const boxW = W - 120;
+            const boxH = 340;
+            const boxX = 60;
+            const boxY = H - boxH - 160;
+
+            // Fundo da caixa
+            ctx.fillStyle = 'rgba(20,0,35,0.7)';
+            roundRect(ctx, boxX, boxY, boxW, boxH, 30, true, false);
+            ctx.strokeStyle = 'rgba(217,70,239,0.8)';
+            ctx.lineWidth = 3;
+            roundRect(ctx, boxX, boxY, boxW, boxH, 30, false, true);
+
+            // Linha divisória
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(boxX + boxW * 0.45, boxY + 50);
+            ctx.lineTo(boxX + boxW * 0.45, boxY + boxH - 50);
+            ctx.stroke();
+
+            // Lado Esquerdo: NOTA
+            const leftCx = boxX + (boxW * 0.45) / 2;
+
+            ctx.fillStyle = '#FFD700'; // Amarelo
+            ctx.font = 'bold 180px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(data.score || '--', leftCx, boxY + 190);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 28px sans-serif';
+            ctx.fillText('NOTA FINAL', leftCx, boxY + 240);
+
+            const stars = data.score >= 95 ? 5 : data.score >= 85 ? 4 : data.score >= 70 ? 3 : data.score >= 55 ? 2 : 1;
+            ctx.font = '45px sans-serif';
+            ctx.fillText('⭐'.repeat(stars), leftCx, boxY + 300);
+
+            // Lado Direito: MÚSICA
+            const rightX = boxX + boxW * 0.45 + 40;
+            ctx.textAlign = 'left';
+
+            ctx.fillStyle = '#d946ef';
+            ctx.font = 'bold 30px sans-serif';
+            ctx.fillText('🎵 MÚSICA', rightX, boxY + 90);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 65px sans-serif';
+            const songTitle = data.title || 'Desconhecida';
+            wrapText(ctx, songTitle, rightX, boxY + 175, boxW * 0.55 - 60, 75);
+
+            // Estima onde colocar o artista
+            let titleLines = 1;
+            if (ctx.measureText(songTitle).width > (boxW * 0.55 - 60)) {
+                titleLines = Math.ceil(ctx.measureText(songTitle).width / (boxW * 0.55 - 60));
+            }
+            if (titleLines > 2) {
+                titleLines = 2; // Limite de 2 linhas na caixa
+            }
+            const artistY = boxY + 175 + (titleLines - 1) * 75 + 60;
+
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.font = '40px sans-serif';
+            ctx.fillText(data.artist || '', rightX, artistY);
+
+            // --- RODAPÉ ---
+            ctx.fillStyle = '#d946ef';
+            ctx.font = 'bold 36px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(data.challenge ? '🔥 DESAFIO ACEITO!' : 'karaoke.unodev.com.br', W / 2, H - 90);
+
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.font = '28px sans-serif';
+            ctx.fillText(data.challenge ? 'Lançado por ' + data.challenge.authorName + ' • Cantado por ' + data.singer : 'Peça suas músicas e compartilhe sua performance! 🎉', W / 2, H - 45, W - 80);
+
+            // Gera blob para compartilhar
+            canvas.toBlob(blob => { scoreCardBlob = blob; }, 'image/png');
+
+            // Mostra o modal
+            const scoreModal = document.getElementById('scoreCardModal');
+            scoreModal.style.display = 'flex';
+            requestAnimationFrame(() => { scoreModal.style.opacity = '1'; });
+        }
+
+        // Funções auxiliares do Canvas
+        // Carrega imagem via fetch+Blob para evitar bloqueio CORS no Canvas
+        // (Firebase Storage URLs falham com crossOrigin='anonymous' no canvas)
+        async function loadImageCors(url) {
+            // data: URLs não precisam de CORS — carrega direto
+            if (url && url.startsWith('data:')) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => resolve(img);
+                    img.onerror = () => reject(new Error('data URL load failed'));
+                    img.src = url;
+                });
+            }
+
+            // URLs remotas: tenta fetch → Blob URL (evita CORS no canvas)
+            try {
+                const response = await fetch(url, { mode: 'cors' });
+                if (!response.ok) throw new Error('fetch ' + response.status);
+                const blob = await response.blob();
+                const objectUrl = URL.createObjectURL(blob);
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => { URL.revokeObjectURL(objectUrl); resolve(img); };
+                    img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error('img load failed')); };
+                    img.src = objectUrl;
+                });
+            } catch (e) {
+                // Fallback: crossOrigin sem cache-buster (cache-buster corrompe data: URLs)
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.onload = () => resolve(img);
+                    img.onerror = reject;
+                    img.src = url;
+                });
+            }
+        }
+
+        function drawInitialsOnCanvas(ctx, name, cx, cy, r) {
+            ctx.fillStyle = '#d946ef';
+            ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.font = `bold ${r * 0.7}px sans-serif`;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            const initials = (name || 'K').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+            ctx.fillText(initials, cx, cy);
+            ctx.textBaseline = 'alphabetic';
+        }
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 2) {
+            const words = text.split(' ');
+            let line = '';
+            let currentLine = 0;
+            for (let i = 0; i < words.length; i++) {
+                const test = line + words[i] + ' ';
+                if (ctx.measureText(test).width > maxWidth && i > 0) {
+                    if (currentLine >= maxLines - 1) {
+                        let truncLine = line.trim();
+                        while (ctx.measureText(truncLine + '...').width > maxWidth && truncLine.length > 0) {
+                            truncLine = truncLine.slice(0, -1);
+                        }
+                        ctx.fillText(truncLine + '...', x, y);
+                        return;
+                    } else {
+                        ctx.fillText(line, x, y);
+                        line = words[i] + ' ';
+                        y += lineHeight;
+                        currentLine++;
+                    }
+                } else { line = test; }
+            }
+            if (currentLine < maxLines) {
+                ctx.fillText(line, x, y);
+            }
+        }
+
+        function roundRect(ctx, x, y, w, h, r, fill, stroke) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.arcTo(x + w, y, x + w, y + r, r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+            ctx.lineTo(x + r, y + h);
+            ctx.arcTo(x, y + h, x, y + h - r, r);
+            ctx.lineTo(x, y + r);
+            ctx.arcTo(x, y, x + r, y, r);
+            ctx.closePath();
+            if (fill) ctx.fill();
+            if (stroke) ctx.stroke();
+        }
+
+        async function shareScoreCard() {
+            const canvas = document.getElementById('scoreCardCanvas');
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], 'karaoke-party-score.png', { type: 'image/png' });
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            title: '🎤 Karaoke Party — Minha Performance!',
+                            text: 'Olha minha nota no Karaoke Party! 🎵',
+                            files: [file]
+                        });
+                    } catch (e) {
+                        if (e.name !== 'AbortError') downloadScoreCard();
+                    }
+                } else {
+                    downloadScoreCard();
+                }
+            }, 'image/png');
+        }
+
+        function downloadScoreCard() {
+            const canvas = document.getElementById('scoreCardCanvas');
+            const link = document.createElement('a');
+            link.download = 'karaoke-party-score.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function closeScoreCard() {
+            const m = document.getElementById('scoreCardModal');
+            if (!m) return;
+            m.style.opacity = '0';
+            setTimeout(() => { m.style.display = 'none'; }, 300);
+        }
+
+        // ════════════════════════════════
+        // PAGINAÇÃO
+        // ════════════════════════════════
+        function renderPage(page, source) {
+            const src = source || catalog;
+            activeSource = src;
+            currentPage = page;
+            const start = page * PAGE_SIZE;
+            render(src.slice(start, start + PAGE_SIZE));
+            updatePaginationBar(src.length);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const totalPages = Math.ceil(src.length / PAGE_SIZE);
+            if (totalPages > 1) showPageToast(page + 1, totalPages);
+        }
+
+
+        // _lastPageDir movido para o topo do script para evitar TDZ
+        function showPageToast(page, total) {
+            const existing = document.getElementById('pageToast');
+            if (existing) existing.remove();
+            const dir = _lastPageDir >= 0 ? 1 : -1;
+            const toast = document.createElement('div');
+            toast.id = 'pageToast';
+            toast.innerText = `${page} / ${total}`;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 80px;
+                right: 16px;
+                background: rgba(217,70,239,0.88);
+                color: #fff;
+                font-family: 'Poppins', sans-serif;
+                font-size: 0.85rem;
+                font-weight: 700;
+                padding: 6px 14px;
+                border-radius: 20px;
+                z-index: 9999;
+                pointer-events: none;
+                opacity: 0;
+                transform: translateX(${dir * 40}px);
+                transition: opacity 0.2s ease, transform 0.2s ease;
+                border: 1px solid rgba(255,255,255,0.15);
+                box-shadow: 0 2px 12px rgba(217,70,239,0.4);
+                letter-spacing: 1px;
+            `;
+            document.body.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(0)';
+            });
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = `translateX(${dir * -30}px)`;
+            }, 700);
+            setTimeout(() => toast.remove(), 950);
+        }
+
+        function updatePaginationBar(totalItems) {
+            const bar = document.getElementById('paginationBar');
+            if (!bar) return;
+            const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+            if (totalPages <= 1) { bar.style.display = 'none'; return; }
+            bar.style.display = 'flex';
+            document.getElementById('pageIndicator').innerText = `Página ${currentPage + 1} de ${totalPages}`;
+            document.getElementById('btnPrevPage').disabled = currentPage === 0;
+            document.getElementById('btnNextPage').disabled = currentPage >= totalPages - 1;
+        }
+
+        function goPage(dir) {
+            const totalPages = Math.ceil((activeSource || catalog).length / PAGE_SIZE);
+            const next = currentPage + dir;
+            if (next < 0 || next >= totalPages) return;
+            _lastPageDir = dir;
+            renderPage(next, activeSource);
+        }
+
+        // ════════════════════════════════
+        // ÍNDICE ALFABÉTICO
+        // ════════════════════════════════
+        // ════════════════════════════════
+        // ════════════════════════════════
+        // RÉGUA DE LETRAS (HORIZONTAL CAROUSEL)
+        // ════════════════════════════════
+        // ALPHA_LETTERS foi movido para o topo do script (linha ~489) para evitar TDZ
+        // alphaValidLetters e alphaRulerDebounce também foram movidos
+
+        function buildAlphaIndex() {
+            // Descobre quais letras têm artistas
+            alphaValidLetters = ALPHA_LETTERS.filter(letter =>
+                catalog.some(s => {
+                    const first = normalizeStr(s.artist)[0];
+                    return letter === '#' ? /[0-9]/.test(first) : first === letter.toLowerCase();
+                })
+            );
+            renderAlphaRuler();
+            // Mostrar régua
+            const container = document.getElementById('alphaRulerContainer');
+            if (container) container.style.display = 'block';
+        }
+
+        function renderAlphaRuler() {
+            const track = document.getElementById('alphaRuler');
+            if (!track) return;
+            track.innerHTML = '';
+
+            alphaValidLetters.forEach(letter => {
+                const item = document.createElement('div');
+                item.className = 'alpha-letter-item';
+                item.textContent = letter;
+                item.onclick = () => {
+                    item.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                };
+                track.appendChild(item);
+            });
+
+            // Configurar IntersectionObserver para detectar letra ativa
+            const observerOptions = {
+                root: track,
+                threshold: 0.6,
+                rootMargin: '0px -40% 0px -40%'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const letter = entry.target.textContent;
+                        updateActiveLetter(entry.target, letter);
+                    }
+                });
+            }, observerOptions);
+
+            track.querySelectorAll('.alpha-letter-item').forEach(el => observer.observe(el));
+
+            // Animação Idle Inicial (ajuda o usuário a perceber que é scrollável)
+            setTimeout(() => {
+                const container = document.getElementById('alphaRulerContainer');
+                container.classList.add('ruler-idle-hint');
+                setTimeout(() => container.classList.remove('ruler-idle-hint'), 3000);
+            }, 2000);
+        }
+
+        function updateActiveLetter(el, letter) {
+            // Remover 'active' de todos
+            document.querySelectorAll('.alpha-letter-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+
+            // Feedback Haptic (se disponível)
+            if (window.navigator.vibrate) window.navigator.vibrate(10);
+
+            // Debounce para não filtrar enquanto o usuário ainda está arrastando freneticamente
+            clearTimeout(alphaRulerDebounce);
+            alphaRulerDebounce = setTimeout(() => {
+                navigateToAlphaLetter(letter);
+            }, 400);
+        }
+
+        function navigateToAlphaLetter(letter) {
+            const idx = catalog.findIndex(s => {
+                const first = normalizeStr(s.artist)[0];
+                return letter === '#' ? /[0-9]/.test(first) : first === letter.toLowerCase();
+            });
+            if (idx === -1) return;
+
+            const reordered = [...catalog.slice(idx), ...catalog.slice(0, idx)];
+            activeSource = reordered;
+            _lastPageDir = 1;
+            renderPage(0, reordered);
+
+            const container = document.getElementById('alphaRulerContainer');
+            if (container) {
+                container.classList.add('has-filter');
+                setTimeout(() => container.classList.remove('has-filter'), 1500);
+            }
+        }
+
+        function updateAlphaIndex() {
+            const container = document.getElementById('alphaRulerContainer');
+            if (container) container.classList.remove('has-filter');
+            activeSource = null;
+        }
+
+        function filterByLetter() { }
+
+        // ════════════════════════════════
+        // SWIPE PARA TROCAR PÁGINA
+        // ════════════════════════════════
+        document.getElementById('mobileList').addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        document.getElementById('mobileList').addEventListener('touchend', e => {
+            const deltaX = e.changedTouches[0].screenX - touchStartX;
+            const deltaY = e.changedTouches[0].screenY - touchStartY;
+            if (Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY)) return;
+            if (deltaX < 0) goPage(1);
+            else goPage(-1);
+        }, { passive: true });
+
+    </script>
+    <script src="tour-mobile.js" defer></script>
+
+    <script>
+        // 1. Registro do Service Worker + Pedido de Permissão
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('../sw.js')
+                .then((reg) => {
+                    console.log('PWA Service Worker ativo!');
+
+                    if ('Notification' in window && Notification.permission === 'default') {
+                        Notification.requestPermission().then(permission => {
+                            if (permission === 'granted') {
+                                console.log('Permissão de notificação concedida!');
+                            }
+                        });
+                    }
+                })
+                .catch(err => console.error('Erro no PWA:', err));
+        }
+
+        // 2. Função de Notificação Nativa
+        function triggerSystemNotification(title, body) {
+            // Vibração direta na tela
+            if ('vibrate' in navigator) {
+                try { navigator.vibrate([300, 100, 300, 100, 500]); } catch (e) { }
+            }
+
+            // Envio do Pop-up Nativo via Service Worker
+            if ('Notification' in window && Notification.permission === 'granted') {
+                if (navigator.serviceWorker) {
+                    navigator.serviceWorker.ready.then((reg) => {
+                        if (reg.active) {
+                            reg.active.postMessage({
+                                type: 'SHOW_NOTIFICATION',
+                                payload: { title, body }
+                            });
+                        }
+                    }).catch(err => console.error('Erro no envio:', err));
+                }
+            }
+        }
+    </script>
+
+    <script>MobileTone.init({db, auth, getRoom: () => currentRoomCode});
+    SocialMobile.init({db, user: () => currentUser, room: () => currentRoomCode, mount: () => document.getElementById('mainContent')});
+    ChallengeMobile.init({db, user: () => currentUser, room: () => currentRoomCode, catalog: () => catalog, users: () => activeUsers, mount: () => document.getElementById('mainContent')});</script>
+</body>
+
+</html>
+

@@ -1,0 +1,44 @@
+.party-dialog{width:min(760px,94vw);max-height:88vh;box-sizing:border-box;background:#101022;color:#f5f5ff;border:1px solid #a64bd2;border-radius:20px;padding:24px;overflow:auto;font:inherit}.party-dialog::backdrop{background:#000b}.party-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px}.party-heading h2{font-size:1.25rem;margin:0}.party-button{background:#25213c;color:#fff;border:1px solid #736282;border-radius:9px;padding:10px 14px;cursor:pointer;font:inherit;font-size:.85rem}.party-button:hover{background:#43315b}.party-button:disabled{opacity:.5;cursor:wait}.party-actions{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.party-card{padding:14px;border:1px solid #ffffff24;border-radius:12px;margin:12px 0;overflow-wrap:anywhere}.party-muted{color:#bbb9ca;font-size:.85rem;line-height:1.5}.party-dialog select,.party-dialog input,.party-dialog textarea,.party-filters input,.party-filters select{background:#171725;color:#fff;padding:10px;border:1px solid #777;border-radius:8px;max-width:100%;box-sizing:border-box}.party-dialog textarea{width:100%;min-height:80px}.party-filters{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.party-dialog pre{white-space:pre-wrap;font:inherit;line-height:1.6}.party-warning{color:#ffc66d}.party-table-wrap{overflow-x:auto}.party-dialog table{width:100%;border-collapse:collapse}.party-dialog th,.party-dialog td{padding:10px;text-align:left;border-bottom:1px solid #ffffff20;vertical-align:top}@media(max-width:600px){.party-dialog{padding:16px}.party-heading{align-items:flex-start}.party-dialog td{min-width:100px}}
+
+#main_wrapper .header-right{display:flex;flex-direction:row;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:nowrap}#main_wrapper .header-right .btn-icon{flex:0 0 auto;margin:0}
+.party-dialog{position:fixed;inset:0;margin:auto;height:fit-content;width:min(720px,calc(100vw - 32px));max-height:calc(100dvh - 48px);padding:28px;border:1px solid #ffffff24;border-radius:24px;background:linear-gradient(150deg,#20162f,#11111e 60%);box-shadow:0 28px 100px #000b;color:#f4f1ff;overscroll-behavior:contain}.party-dialog::backdrop{background:#06050cbf;backdrop-filter:blur(7px)}.party-heading{padding-bottom:18px;margin-bottom:20px;border-bottom:1px solid #ffffff18}.party-heading h2{font-size:1.3rem;letter-spacing:-.025em;font-weight:650}.party-button{border:1px solid #ffffff25;background:#ffffff0a;padding:11px 16px;border-radius:12px;transition:background .15s,border-color .15s}.party-button:hover{background:#d946ef1a;border-color:#d946ef88}.party-button:focus-visible{outline:2px solid #de7aff;outline-offset:3px}.party-heading .party-button{font-size:.8rem;color:#d3c9df}.party-card{background:#ffffff04;padding:18px;border-radius:16px;border-color:#ffffff15}.party-card strong{display:block;margin-bottom:8px}.party-card p{margin:8px 0 12px}.party-dialog>div>h3{margin:0 0 12px;font-size:1.1rem}.party-dialog p{line-height:1.6;margin-bottom:12px}.party-dialog pre{padding:16px;background:#0003;border-radius:14px;font-size:.9rem}.party-dialog select,.party-dialog input,.party-dialog textarea{margin:8px 0;border-color:#ffffff30;background:#090813}.party-dialog details summary{cursor:pointer;padding:8px 0;color:#dca6f4}.party-actions{gap:10px;margin:20px 0}.party-dialog button{white-space:normal}@media(max-width:540px){.party-dialog{padding:20px;width:calc(100vw - 24px);max-height:calc(100dvh - 32px);border-radius:20px}.party-heading h2{font-size:1.1rem}.party-actions .party-button{flex:1 1 140px}}
+
+/* Configurações amplas, com grupos e ações sempre acessíveis. */
+#settingsModal { padding: 20px; box-sizing: border-box; }
+#settingsModal .settings-content { width: min(1040px, 100%) !important; max-height: 92dvh !important; padding: 28px; border-radius: 24px; border-width: 1px; }
+#settingsModal h2 { margin: 0; font-size: 1.35rem; }
+#settingsModal .settings-body { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 22px; min-height: 0; max-height: none !important; margin-top: 22px; padding-right: 10px !important; scrollbar-width: thin; scrollbar-color: #744392 transparent; }
+#settingsModal .settings-group { min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+#settingsModal .settings-group h3 { color: #dfacf5; font-size: .9rem; margin: 0 0 2px; letter-spacing: .04em; }
+#settingsModal .setting-item { margin: 0 !important; padding: 16px; }
+#settingsModal .setting-item label { font-size: .88rem; line-height: 1.5; }
+#settingsModal small { display: block; font-size: .75rem; line-height: 1.6; margin-top: 8px; opacity: .7; }
+#settingsModal input, #settingsModal select { max-width: 100%; box-sizing: border-box; }
+#settingsModal .setting-section { margin: 0; padding: 0; border: 0; }
+#settingsModal .difficulty-radios { flex-wrap: wrap; }
+#settingsModal .modal-footer { flex-shrink: 0; display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.1); }
+#settingsModal .modal-footer button { min-width: 110px; margin: 0; }
+@media(max-width: 700px) {
+ #settingsModal { padding: 10px; }
+ #settingsModal .settings-content { padding: 20px 16px; max-height: 94dvh !important; }
+ #settingsModal .settings-body { grid-template-columns: minmax(0,1fr); }
+ #settingsModal .modal-footer button { flex: 1; }
+}
+
+/* Mantém as configurações legíveis mesmo quando a cabine usa zoom reduzido. */
+#settingsModal .settings-content { width: min(1120px, 100%) !important; box-sizing: border-box; background: linear-gradient(145deg, #171321, #0e1019); box-shadow: 0 24px 100px #0009; }
+#settingsModal .settings-content h2 { font-size: 22px; }
+#settingsModal .settings-intro { font-size: 14px; color: #aaa6ba; margin: 8px 0 0; line-height: 1.5; }
+#settingsModal .settings-group { background: #ffffff03; border: 1px solid #ffffff0f; border-radius: 16px; padding: 18px; }
+#settingsModal .settings-group h3 { font-size: 15px; }
+#settingsModal .setting-item label, #settingsModal .radio-label, #settingsModal select, #settingsModal input[type=text] { font-size: 14px; }
+#settingsModal .setting-item small, #settingsModal .setting-item p, #settingsModal .photo-input-btn, #settingsModal .diff-btn, #settingsModal .calib-label { font-size: 12px !important; }
+#settingsModal #adminMenuBtn { align-items: center; justify-content: center; font-size: 14px; text-decoration: none; }
+#settingsModal .modal-footer button { font-size: 13px; padding: 12px 22px; }
+@media (min-width: 1025px) and (pointer: fine) {
+ #settingsModal { zoom: 1.25; width: 100vw; height: 100dvh; }
+}
+@media (max-width: 700px) {
+ #settingsModal .settings-group { padding: 12px; }
+ #settingsModal .settings-content h2 { font-size: 19px; }
+}
