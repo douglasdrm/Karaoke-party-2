@@ -47,11 +47,20 @@
     let currentRoom = '';
     let currentNowPlaying = null;
     let feedbackTimer = null;
+    let authStateVersion = 0;
     const roomListeners = [];
 
     function showOnly(target) {
         [elements.loading, elements.auth, elements.connect, elements.dashboard].forEach((section) => {
-            section.hidden = section !== target;
+            const isVisible = section === target;
+            section.hidden = !isVisible;
+            section.setAttribute('aria-hidden', String(!isVisible));
+
+            // Alguns navegadores móveis permitem que uma regra `display` da página
+            // prevaleça durante a troca de estado. O estilo inline garante que uma
+            // tela antiga (principalmente o login) não continue sobre a atual.
+            if (isVisible) section.style.removeProperty('display');
+            else section.style.setProperty('display', 'none', 'important');
         });
     }
 
@@ -215,26 +224,48 @@
         return true;
     }
 
-    document.getElementById('mobileDjGoogle').addEventListener('click', async () => {
+    document.getElementById('mobileDjGoogle').addEventListener('click', async (event) => {
         showError(elements.authError);
+        const button = event.currentTarget;
+        button.disabled = true;
         try {
-            await auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+            const credential = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+            if (credential.user) showOnly(elements.connect);
         } catch (error) {
-            showError(elements.authError, 'Não foi possível iniciar o login com Google.');
+            if (error.code === 'auth/popup-blocked') {
+                try {
+                    await auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+                    return;
+                } catch (redirectError) {
+                    console.warn('Login Google por redirecionamento recusado:', redirectError.code);
+                }
+            }
+            if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+                console.warn('Login Google da Cabine móvel recusado:', error.code);
+                showError(elements.authError, 'Não foi possível entrar com Google. Tente novamente.');
+            }
+        } finally {
+            button.disabled = false;
         }
     });
 
     document.getElementById('mobileDjEmailForm').addEventListener('submit', async (event) => {
         event.preventDefault();
         showError(elements.authError);
+        const button = event.currentTarget.querySelector('[type="submit"]');
+        button.disabled = true;
         try {
-            await auth.signInWithEmailAndPassword(
+            const credential = await auth.signInWithEmailAndPassword(
                 document.getElementById('mobileDjEmail').value.trim(),
                 document.getElementById('mobileDjPassword').value
             );
+            // Não espera a leitura da sala para retirar o formulário de login.
+            if (credential.user) showOnly(elements.connect);
         } catch (error) {
             console.warn('Login da Cabine móvel recusado:', error.code);
             showError(elements.authError, 'E-mail ou senha inválidos.');
+        } finally {
+            button.disabled = false;
         }
     });
 
@@ -278,6 +309,7 @@
     });
 
     auth.onAuthStateChanged(async (user) => {
+        const stateVersion = ++authStateVersion;
         currentUser = user;
         elements.logout.hidden = !user;
         if (!user) {
@@ -287,6 +319,9 @@
         }
 
         elements.identity.textContent = `Conectado como ${user.displayName || user.email || 'DJ'}`;
+        // A autenticação já terminou. Mostra a próxima etapa imediatamente e
+        // restaura uma sala anterior em segundo plano.
+        showOnly(elements.connect);
         const params = new URLSearchParams(window.location.search);
         let savedRoom = params.get('room');
         if (!savedRoom) {
@@ -295,12 +330,20 @@
         if (savedRoom) {
             elements.roomInput.value = roomCode(savedRoom);
             try {
-                if (await connectRoom(savedRoom)) return;
+                if (await connectRoom(savedRoom) && stateVersion === authStateVersion && currentUser) return;
             } catch (error) {
                 console.warn('Sala anterior indisponível:', error);
             }
         }
-        showOnly(elements.connect);
+        if (stateVersion === authStateVersion && currentUser) showOnly(elements.connect);
+    });
+
+    // Completa logins iniciados por redirecionamento em navegadores que bloqueiam popup.
+    auth.getRedirectResult().catch((error) => {
+        if (error.code && error.code !== 'auth/no-auth-event') {
+            console.warn('Retorno do login Google indisponível:', error.code);
+            showError(elements.authError, 'Não foi possível concluir o login com Google. Tente novamente.');
+        }
     });
 
     window.addEventListener('pagehide', detachRoom);

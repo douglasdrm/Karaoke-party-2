@@ -273,6 +273,13 @@ a { color: inherit; }
         var(--entry-bg);
 }
 
+.mobile-control-page [hidden] { display: none !important; }
+
+.mobile-control-page button:disabled {
+    cursor: wait;
+    opacity: .62;
+}
+
 .mobile-control-header {
     position: sticky;
     top: 0;
